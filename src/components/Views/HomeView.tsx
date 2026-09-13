@@ -2,9 +2,18 @@ import React, { useEffect } from 'react';
 import { RouteId } from '../../types';
 import { useParallax } from '../../hooks/useParallax';
 import { usePortfolio } from '../../context/PortfolioContext';
+import dynamic from 'next/dynamic';
 import { ExperienceGallerySection } from './ExperienceGallerySection';
-import { HomeLabNotesSection } from './HomeLabNotesSection';
+import { HomeLabNotesSkeleton } from './HomeLabNotesSection';
 import { GitAccountsBar } from '../Home/GitAccountsBar';
+
+const HomeLabNotesSection = dynamic(
+  () => import('./HomeLabNotesSection').then((mod) => mod.HomeLabNotesSection),
+  {
+    ssr: false,
+    loading: () => <HomeLabNotesSkeleton />,
+  }
+);
 
 interface HomeViewProps {
   onNavigate: (route: RouteId) => void;

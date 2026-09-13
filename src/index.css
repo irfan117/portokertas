@@ -11,8 +11,8 @@
   --accent:#2F5CFF;
   --accent-ink:#12276B;
   --radius:2px;
-  --maxw:1200px;
-  --gutter:clamp(24px, 6vw, 72px);
+  --maxw:1120px;
+  --gutter:clamp(16px, 3.5vw, 40px);
   --social-panel-width:min(420px, calc(100vw - 44px));
   font-size:16px;
 }
@@ -45,6 +45,16 @@ button{ font-family:inherit; cursor:pointer; }
 :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
 
 .wrap{ max-width:var(--maxw); margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter); }
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 18px;
+  }
+  .wrap {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+}
 
 /* ---------- NAV ---------- */
 .nav{
@@ -460,7 +470,7 @@ section{ position:relative; }
 }
 
 .framer-footer-container {
-  max-width: 1360px;
+  max-width: var(--maxw);
   margin: 0 auto;
   padding: 0 var(--gutter);
   position: relative;
@@ -700,7 +710,7 @@ section{ position:relative; }
 
 .framer-footer-watermark-svg {
   width: 100%;
-  max-width: 1360px;
+  max-width: var(--maxw);
   height: auto;
   display: block;
   margin: 0 auto;

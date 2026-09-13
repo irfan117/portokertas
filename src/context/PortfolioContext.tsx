@@ -259,6 +259,8 @@ function mapRemoteGitAccounts(remoteAccounts: any[]): GitAccount[] {
 
 interface PortfolioContextType {
   data: PortfolioData;
+  isLoading: boolean;
+  isDatabaseLoaded: boolean;
   lastSaved: Date | null;
   updateProfile: (patch: Partial<ProfileData>) => void;
   updateWorkProjects: (projects: WorkProject[]) => void;
@@ -344,9 +346,13 @@ function loadInitialData(): PortfolioData {
 
 export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [data, setData] = useState<PortfolioData>(loadInitialData);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isDatabaseLoaded, setIsDatabaseLoaded] = useState<boolean>(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   useEffect(() => {
+    setIsLoading(true);
+    setIsDatabaseLoaded(false);
     void fetch(API_BASE)
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`Portfolio API ${response.status}`))))
       .then((remote) => {
@@ -368,7 +374,11 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           }));
         }
       })
-      .catch((error) => console.warn('Portfolio API belum tersedia, memakai data lokal:', error));
+      .catch((error) => console.warn('Portfolio API belum tersedia, memakai data lokal:', error))
+      .finally(() => {
+        setIsLoading(false);
+        setIsDatabaseLoaded(true);
+      });
   }, []);
 
   const save = (newData: PortfolioData) => {
@@ -553,6 +563,8 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     <PortfolioContext.Provider
       value={{
         data,
+        isLoading,
+        isDatabaseLoaded,
         lastSaved,
         updateProfile,
         updateWorkProjects,
