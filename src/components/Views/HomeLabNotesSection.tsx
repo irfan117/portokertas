@@ -1,7 +1,9 @@
+'use client';
+
 import React from 'react';
 import { RouteId } from '../../types';
 import { usePortfolio } from '../../context/PortfolioContext';
-import { ArrowUpRight, BookOpen, Clock, Calendar } from 'lucide-react';
+import { ArrowUpRight, BookOpen, Calendar, Clock } from 'lucide-react';
 
 interface HomeLabNotesSectionProps {
   onNavigate: (route: RouteId) => void;
@@ -11,33 +13,33 @@ export const HomeLabNotesSkeleton: React.FC = () => {
   return (
     <section
       id="lab-notes-section"
-      className="py-16 md:py-24 bg-[var(--paper)] border-t border-b border-[var(--line)] transition-colors"
+      className="py-24 md:py-32 px-4 md:px-12 bg-white"
     >
-      <div className="max-w-[var(--maxw)] mx-auto px-4 sm:px-6 md:px-8 animate-pulse">
+      <div className="max-w-[1400px] mx-auto animate-pulse">
         {/* Header Skeleton */}
-        <div className="flex flex-col items-center text-center mb-12 md:mb-16 gap-3">
-          <div className="h-3 w-44 bg-[var(--line)]/60 rounded-full mb-1" />
-          <div className="h-10 md:h-12 w-56 sm:w-72 bg-[var(--line)]/50 rounded-lg" />
-          <div className="h-4 w-72 sm:w-96 bg-[var(--line)]/30 rounded-full mt-2" />
+        <div className="flex flex-col items-center text-center mb-24 gap-6">
+          <div className="h-20 w-80 bg-black/[0.04] rounded-2xl mb-4" />
+          <div className="h-4 w-48 bg-black/[0.03] rounded-full" />
         </div>
 
-        {/* Note Cards Skeleton */}
-        <div className="flex flex-col gap-12 md:gap-16">
+        {/* Entries Skeleton */}
+        <div className="flex flex-col gap-[6vw]">
           {[1, 2].map((i) => (
-            <div
-              key={i}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center p-4 sm:p-6 rounded-2xl bg-[var(--white)] border border-[var(--line)]/60"
-            >
-              <div className="lg:col-span-1 hidden lg:flex justify-center">
-                <div className="h-10 w-8 bg-[var(--line)]/30 rounded" />
+            <div key={i} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-1 hidden lg:block">
+                <div className="h-24 w-20 bg-black/[0.02] rounded-xl" />
               </div>
-              <div className="lg:col-span-6 flex flex-col justify-center gap-3">
-                <div className="h-3.5 w-32 bg-[var(--line)]/50 rounded-full" />
-                <div className="h-7 w-4/5 bg-[var(--line)]/60 rounded-md" />
-                <div className="h-14 w-full bg-[var(--line)]/30 rounded-md" />
-                <div className="h-8 w-44 bg-[var(--line)]/40 rounded-full mt-2" />
+              <div className="lg:col-span-5 flex flex-col justify-center gap-4">
+                <div className="h-4 w-40 bg-black/[0.04] rounded-full" />
+                <div className="h-10 w-3/4 bg-black/[0.06] rounded-xl" />
+                <div className="h-20 w-full bg-black/[0.03] rounded-xl" />
+                <div className="h-6 w-48 bg-black/[0.03] rounded-lg mt-2" />
+                <div className="flex gap-2 mt-4">
+                  <div className="h-8 w-24 bg-black/[0.03] rounded-full" />
+                  <div className="h-8 w-24 bg-black/[0.03] rounded-full" />
+                </div>
               </div>
-              <div className="lg:col-span-5 aspect-[16/10] bg-[var(--line)]/30 rounded-xl" />
+              <div className="lg:col-span-6 aspect-video bg-black/[0.03] rounded-[2.5rem]" />
             </div>
           ))}
         </div>
@@ -50,13 +52,12 @@ export const HomeLabNotesSection: React.FC<HomeLabNotesSectionProps> = ({ onNavi
   const { data, isLoading, isDatabaseLoaded } = usePortfolio();
   const { labNotes } = data;
 
-  // Prevent momentary visibility of dummy data:
-  // Do NOT render the UI with dummy notes while database fetch is in progress.
+  // Proteksi: jangan tampilkan data dummy sebelum fetch database selesai
   if (isLoading || !isDatabaseLoaded) {
     return <HomeLabNotesSkeleton />;
   }
 
-  // Display top 4 featured engineering lab notes / dispatches
+  // Ambil 4 lab notes teratas
   const featuredNotes = (labNotes || []).slice(0, 4);
 
   const handleOpenNote = (noteIdOrSlug: string) => {
@@ -64,99 +65,88 @@ export const HomeLabNotesSection: React.FC<HomeLabNotesSectionProps> = ({ onNavi
   };
 
   return (
-    <section
-      id="lab-notes-section"
-      className="py-16 md:py-24 bg-[var(--paper)] border-t border-b border-[var(--line)] transition-colors"
-    >
+    <section id="lab-notes-section" className="py-24 md:py-32 px-4 md:px-12 bg-white">
       <div id="lab-notes" className="sr-only" />
-      <div className="max-w-[var(--maxw)] mx-auto px-4 sm:px-6 md:px-8">
+      <div className="max-w-[1400px] mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center mb-12 md:mb-16 gap-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--line)] bg-[var(--white)] text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--accent)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-            <span>Field Dispatches &amp; Post-Mortems</span>
+        <div className="flex flex-col items-center text-center mb-24 gap-6">
+          <div>
+            <h2 className="text-[10vw] lg:text-[clamp(6rem,8vw,10rem)] font-normal tracking-tighter leading-[0.85] mb-8 text-black font-['Space_Grotesk']">
+              Lab <br />
+              <span className="text-[var(--accent)] font-serif lowercase tracking-normal italic font-normal">
+                notes
+              </span>
+            </h2>
+            <div className="flex items-center justify-center gap-2">
+              <span className="h-px w-12 bg-[var(--accent)]/20" />
+              <p className="text-gray-600 font-mono text-[9px] uppercase tracking-[0.4em] leading-relaxed">
+                Handpicked selection &amp; Post-Mortems
+              </p>
+              <span className="h-px w-12 bg-[var(--accent)]/20" />
+            </div>
           </div>
-
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[var(--ink)] font-['Space_Grotesk']">
-            Lab{' '}
-            <span className="font-serif lowercase tracking-normal italic font-normal text-[var(--accent)]">
-              notes
-            </span>
-          </h2>
-
-          <p className="text-[var(--muted)] text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            Technical write-ups, architecture decisions, and operational post-mortems from production systems.
-          </p>
         </div>
 
         {/* Notes Entries List */}
         {featuredNotes.length === 0 ? (
-          <div className="text-center py-12 px-4 rounded-xl border border-dashed border-[var(--line)] bg-[var(--white)] text-[var(--muted)] text-sm font-mono">
+          <div className="text-center py-20 px-4 rounded-3xl border border-dashed border-black/10 bg-black/[0.01] text-gray-400 text-sm font-mono">
             Belum ada lab notes yang dipublikasikan.
           </div>
         ) : (
-          <div className="flex flex-col gap-8 sm:gap-10 md:gap-12">
+          <div className="flex flex-col gap-[6vw]">
             {featuredNotes.map((note, index) => {
               const noteTarget = note.slug || note.id;
               const numberLabel = String(index + 1).padStart(2, '0');
 
               return (
-                <article
-                  key={note.id || index}
-                  className="group relative bg-[var(--white)] border border-[var(--line)] rounded-2xl p-5 sm:p-7 md:p-8 hover:border-[var(--ink)]/40 hover:shadow-lg hover:shadow-black/[0.04] transition-all duration-300"
-                >
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-                    {/* Subtle Number Index (Desktop) */}
-                    <div className="lg:col-span-1 hidden lg:flex flex-col items-center justify-center select-none">
-                      <span className="text-3xl xl:text-4xl font-bold text-[var(--ink)]/15 group-hover:text-[var(--accent)]/40 font-['Space_Grotesk'] transition-colors duration-300">
+                <article key={note.id || index} className="project-entry group relative">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    {/* Subtle Huge Number (Desktop) */}
+                    <div className="lg:col-span-1 hidden lg:block select-none">
+                      <span className="text-[8vw] font-normal text-black/[0.04] leading-none transition-colors duration-500 group-hover:text-[var(--accent)]/15 font-['Space_Grotesk']">
                         {numberLabel}
                       </span>
                     </div>
 
                     {/* Note Details Column */}
-                    <div className="lg:col-span-6 flex flex-col justify-center">
-                      {/* Category Pill */}
-                      <div className="flex items-center gap-2 mb-2.5">
-                        <span className="text-[var(--accent)] font-medium font-mono text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 bg-[var(--accent)] rounded-full" />
-                          <span>{note.category}</span>
+                    <div className="lg:col-span-5 flex flex-col justify-center">
+                      <p className="text-[var(--accent)] font-medium text-[10px] uppercase tracking-[0.4em] mb-6 flex items-center gap-3">
+                        <span className="w-1 h-1 bg-[var(--accent)] rounded-full" />
+                        <span>
+                          {note.category} | {note.readTime}
                         </span>
-                        <span className="text-[var(--muted)] text-xs">·</span>
-                        <span className="text-[var(--muted)] font-mono text-xs">{note.readTime}</span>
-                      </div>
+                      </p>
 
-                      {/* Title */}
                       <h3
                         onClick={() => handleOpenNote(noteTarget)}
-                        className="text-xl sm:text-2xl font-bold mb-3 text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors duration-200 leading-snug font-['Space_Grotesk'] cursor-pointer"
+                        className="text-3xl xl:text-5xl font-normal mb-8 group-hover:text-[var(--accent)] transition-colors duration-500 text-black leading-tight cursor-pointer font-['Space_Grotesk']"
                       >
                         {note.title}
                       </h3>
 
-                      {/* Summary Excerpt */}
-                      <p className="text-[var(--muted)] text-sm sm:text-[15px] leading-relaxed mb-4 line-clamp-3 font-normal">
+                      <p className="text-gray-500 text-lg leading-relaxed mb-6 max-w-md font-medium">
                         {note.summary}
                       </p>
 
-                      {/* Key Takeaways Callout */}
+                      {/* Main Portions / Key Takeaways */}
                       {note.keyTakeaways && note.keyTakeaways.length > 0 && (
-                        <div className="mb-4 p-3 rounded-lg bg-[var(--paper-dim)]/60 border-l-2 border-[var(--accent)]">
-                          <p className="text-[10px] font-mono font-medium uppercase tracking-[0.16em] text-[var(--accent)] mb-1">
-                            Key Takeaway
+                        <div className="mb-8">
+                          <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-gray-400 mb-3 underline decoration-[var(--accent)]/20">
+                            Main Portions
                           </p>
-                          <p className="text-xs sm:text-sm font-medium text-[var(--ink)]/90 leading-relaxed">
-                            {note.keyTakeaways.slice(0, 2).join(' · ')}
+                          <p className="text-sm font-normal text-black/80 leading-relaxed">
+                            {note.keyTakeaways.slice(0, 3).join(' | ')}
                           </p>
                         </div>
                       )}
 
-                      {/* Tech & Topic Badges */}
+                      {/* Tech Badges */}
                       {note.tags && note.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mb-5">
-                          {note.tags.slice(0, 4).map((tag) => (
+                        <div className="flex flex-wrap gap-2 mb-10">
+                          {note.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="px-2.5 py-1 border border-[var(--line)] rounded-full text-[10px] font-medium font-mono text-[var(--muted)] uppercase tracking-wider bg-[var(--paper)]"
+                              className="px-4 py-1.5 border border-black/[0.03] rounded-full text-[9px] font-medium font-mono text-gray-400 uppercase tracking-widest bg-black/[0.01]"
                             >
                               {tag}
                             </span>
@@ -165,40 +155,41 @@ export const HomeLabNotesSection: React.FC<HomeLabNotesSectionProps> = ({ onNavi
                       )}
 
                       {/* Action Link & Meta */}
-                      <div className="flex items-center gap-3 sm:gap-4 flex-wrap pt-2 border-t border-[var(--line)]/60">
+                      <div className="flex items-center gap-4 flex-wrap">
                         <button
                           type="button"
                           onClick={() => handleOpenNote(noteTarget)}
-                          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[var(--line)] text-xs font-mono uppercase tracking-wider text-[var(--ink)] hover:text-[var(--white)] hover:bg-[var(--ink)] hover:border-[var(--ink)] transition-all duration-200 cursor-pointer"
-                          title={`Read dispatch: ${note.title}`}
+                          className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-[var(--line)] text-xs font-mono uppercase tracking-widest text-[var(--ink)]/80 hover:text-[var(--accent)] hover:border-[var(--accent)]/40 transition-all duration-300 bg-[var(--paper)]/50 cursor-pointer"
+                          title={`Read full post-mortem: ${note.title}`}
                         >
-                          <BookOpen size={13} />
+                          <BookOpen size={15} />
                           <span>Read Dispatch</span>
-                          <ArrowUpRight size={13} className="opacity-70" />
+                          <ArrowUpRight size={14} className="opacity-60" />
                         </button>
 
-                        <span className="text-xs font-mono text-[var(--muted)] flex items-center gap-1">
-                          <Calendar size={12} className="opacity-70" />
+                        <span className="text-xs font-mono text-[var(--muted)] flex items-center gap-1.5">
+                          <Calendar size={13} className="opacity-70" />
                           <span>{note.date}</span>
                         </span>
 
-                        <span className="text-xs font-mono text-[var(--muted)] flex items-center gap-1">
-                          <Clock size={12} className="opacity-70" />
+                        <span className="text-xs font-mono text-[var(--muted)] flex items-center gap-1.5">
+                          <Clock size={13} className="opacity-70" />
                           <span>{note.readTime}</span>
                         </span>
                       </div>
                     </div>
 
-                    {/* Visual Media Column */}
-                    <div className="lg:col-span-5 relative aspect-[16/10] overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--paper-dim)] shadow-sm group/img cursor-pointer">
+                    {/* Note Visual Image Column */}
+                    <div className="lg:col-span-6 relative aspect-video overflow-hidden rounded-[2.5rem] border border-black/5 shadow-2xl shadow-black/[0.01] group/img bg-white">
                       <div
-                        className="w-full h-full relative overflow-hidden"
+                        className="w-full h-full bg-black/[0.01] flex items-center justify-center relative backdrop-blur-3xl overflow-hidden cursor-pointer"
                         onClick={() => handleOpenNote(noteTarget)}
                       >
                         <img
-                          alt={note.alt || note.caption || note.title}
+                          alt={note.alt || note.caption || note.title || 'Lab Note'}
                           loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover/img:scale-105"
+                          decoding="async"
+                          className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover/img:scale-105"
                           src={note.img}
                           onError={(e) => {
                             const target = e.currentTarget;
@@ -208,31 +199,40 @@ export const HomeLabNotesSection: React.FC<HomeLabNotesSectionProps> = ({ onNavi
                                 'flex',
                                 'items-center',
                                 'justify-center',
-                                'p-6',
-                                'bg-[var(--paper-dim)]'
+                                'p-8',
+                                'bg-black/[0.02]'
                               );
                             }
                           }}
                         />
 
-                        {/* Subtle Vignette Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-30 group-hover/img:opacity-60 transition-opacity duration-300 pointer-events-none" />
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-[var(--accent)]/5 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                        {/* Dispatch Badge */}
-                        <div className="absolute bottom-3 left-3 px-2.5 py-1 bg-[var(--white)]/95 backdrop-blur-sm rounded-md border border-[var(--line)] text-[9px] font-mono font-medium uppercase tracking-[0.2em] text-[var(--accent)] shadow-sm pointer-events-none">
-                          DISPATCH
-                        </div>
-
-                        {/* Hover Quick-Open Button */}
-                        <div
-                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[var(--ink)] text-[var(--white)] flex items-center justify-center scale-0 group-hover/img:scale-100 transition-all duration-300 shadow-xl z-20 group-hover/img:bg-[var(--accent)]"
-                          title={`Open ${note.title}`}
-                        >
-                          <ArrowUpRight size={20} />
+                        {/* Project Preview Badge */}
+                        <div className="absolute bottom-10 left-10 p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-black/5 translate-y-20 opacity-0 group-hover/img:translate-y-0 group-hover/img:opacity-100 transition-all duration-700 pointer-events-none">
+                          <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-[var(--accent)]">
+                            FIELD DISPATCH PREVIEW
+                          </p>
                         </div>
                       </div>
+
+                      {/* Interactive Circular Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleOpenNote(noteTarget)}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-black text-white flex items-center justify-center scale-0 group-hover/img:scale-100 transition-transform duration-500 shadow-2xl shadow-black/20 z-20 hover:bg-[var(--accent)] cursor-pointer"
+                        title={`Open ${note.title}`}
+                      >
+                        <ArrowUpRight size={32} />
+                      </button>
                     </div>
                   </div>
+
+                  {/* Gradient Hairline Divider */}
+                  {index < featuredNotes.length - 1 && (
+                    <div className="mt-16 w-full h-px bg-gradient-to-r from-transparent via-black/[0.05] to-transparent" />
+                  )}
                 </article>
               );
             })}
@@ -240,22 +240,24 @@ export const HomeLabNotesSection: React.FC<HomeLabNotesSectionProps> = ({ onNavi
         )}
 
         {/* View All Lab Notes CTA */}
-        <div className="mt-12 md:mt-16 flex justify-center">
-          <button
-            type="button"
-            onClick={() => {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-              onNavigate('lab-notes');
-            }}
-            className="group inline-flex items-center gap-3 px-6 sm:px-8 py-3.5 bg-[var(--ink)] text-[var(--white)] rounded-full text-xs font-mono font-medium uppercase tracking-[0.25em] hover:bg-[var(--accent)] transition-colors duration-200 shadow-md shadow-black/5 cursor-pointer"
-            title="Browse all lab notes & post-mortems archive"
-          >
-            <span>View all Lab Notes</span>
-            <ArrowUpRight
-              size={15}
-              className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-            />
-          </button>
+        <div className="mt-32 flex justify-center">
+          <div className="magnetic-wrap" style={{ transition: 'transform 240ms cubic-bezier(0.16, 1, 0.3, 1)' }}>
+            <button
+              type="button"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                onNavigate('lab-notes');
+              }}
+              className="group relative inline-flex items-center gap-4 px-12 py-6 bg-black text-white rounded-full overflow-hidden transition-all duration-500 hover:bg-black/90 hover:gap-6 shadow-2xl shadow-black/10 cursor-pointer"
+              title="Browse all lab notes & post-mortems archive"
+            >
+              <span className="relative z-10 text-xs font-medium uppercase tracking-[0.3em]">
+                View all Lab Notes
+              </span>
+              <ArrowUpRight size={18} className="relative z-10" />
+              <div className="absolute inset-0 bg-[var(--accent)] translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+            </button>
+          </div>
         </div>
       </div>
     </section>
