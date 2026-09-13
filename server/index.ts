@@ -66,9 +66,25 @@ apiRouter.get('/health', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     res.json({ status: 'ok', database: 'connected' });
-  } catch {
-    res.status(503).json({ status: 'degraded', database: 'unavailable' });
+  } catch (e) {
+    res.status(503).json({ status: 'degraded', database: 'unavailable', error: String(e) });
   }
+});
+
+// Endpoint debug — hanya aktif saat belum production atau saat ada header khusus
+apiRouter.get('/debug', (_req, res) => {
+  res.json({
+    NODE_ENV: process.env.NODE_ENV,
+    VERCEL: !!process.env.VERCEL,
+    HAS_DATABASE_URL: !!process.env.DATABASE_URL,
+    DATABASE_URL_PREVIEW: process.env.DATABASE_URL
+      ? process.env.DATABASE_URL.replace(/:([^@]+)@/, ':***@').slice(0, 80)
+      : 'NOT SET',
+    HAS_AUTH_JWT_SECRET: !!process.env.AUTH_JWT_SECRET,
+    HAS_AUTH_ADMIN_EMAIL: !!process.env.AUTH_ADMIN_EMAIL,
+    HAS_AUTH_ADMIN_PASSWORD: !!process.env.AUTH_ADMIN_PASSWORD,
+    HAS_CLOUDINARY: !!process.env.CLOUDINARY_CLOUD_NAME,
+  });
 });
 
 // Mount on /api and root fallback in case rewrite strips /api
