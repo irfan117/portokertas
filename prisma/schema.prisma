@@ -1,0 +1,163 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Profile (single-row aggregate)
+model Profile {
+  id         Int     @id @default(1)
+  name       String
+  role       String
+  location   String
+  heroTitle  String   @db.Text
+  heroLead   String   @db.Text
+  heroMeta   Json
+  heroStats  Json
+  splitTitle String   @db.Text
+  splitDesc  String   @db.Text
+  splitImg   String
+  homeText   String   @db.Text
+  homeCite   String   @db.Text
+  homeBg     String
+  aboutText  String   @db.Text
+  aboutCite  String   @db.Text
+  aboutBg    String
+  aboutBio   Json
+  toolsHeading String   @db.Text
+  toolsText1  String    @db.Text
+  toolsText2  String    @db.Text
+  portraitImg  String
+  approachHeading String   @db.Text
+  approachLead    String   @db.Text
+  approachSteps   Json
+}
+
+// Contact (single-row aggregate)
+model Contact {
+  id        Int    @id @default(1)
+  heading   String
+  email     String
+  github    String
+  linkedin  String
+  xTwitter  String
+  pgpNote   String
+}
+
+// Work Projects
+model WorkProject {
+  id          String   @id
+  title       String
+  desc        String   @db.Text
+  img         String
+  alt         String
+  tags        Json
+  images      Json?
+  period      String?
+  github      String?
+  demoUrl     String?
+  highlights  Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Lab Notes
+model LabNote {
+  id           String   @id
+  slug         String
+  title        String
+  date         String
+  readTime     String
+  category     String
+  tags         Json
+  caption      String   @db.Text
+  img          String
+  alt          String
+  summary      String   @db.Text
+  content      Json
+  codeSnippet  Json?
+  keyTakeaways Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Talks & Writing
+model TalkWriting {
+  id    String   @id
+  title String
+  desc  String
+  tag   String
+}
+
+// Career List
+model CareerItem {
+  id    String   @id
+  title String
+  date  String
+}
+
+// Experience Slides
+model ExperienceSlide {
+  id           String   @id
+  roleTitle    String
+  date         String
+  img          String
+  alt          String
+  captionTitle String
+  captionSub   String
+}
+
+// Case Studies
+model CaseStudy {
+  id           String   @id
+  period       String
+  company      String
+  role         String
+  subtitle     String   @db.Text
+  heroImage    String
+  heroCaption  String
+  leadParagraph1 String   @db.Text
+  midImage     String
+  midCaption   String   @db.Text
+  leadParagraph2 String  @db.Text
+  bulletPoints Json
+  endImage     String
+  endCaption   String   @db.Text
+  prevId       String?
+  prevLabel    String?
+  nextId       String?
+  nextLabel    String?
+}
+
+// Now Items
+model NowItem {
+  id    String   @id
+  key   String
+  value String
+}
+
+model GitAccount {
+  id                 String @id
+  name               String @db.Text
+  handle             String
+  role               String @db.Text
+  url                String
+  avatarText         String
+  badge              String
+  totalContributions Int
+  currentStreak      Int
+  longestStreak      Int
+  pullRequests       Int
+  reposCount         Int
+  seed               Int
+  languages          Json
+  recentCommits      Json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+// Git Accounts

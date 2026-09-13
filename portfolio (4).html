@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kenji Aditya — Software Engineer</title>
+<meta name="description" content="Portfolio of Kenji Aditya, a backend and infrastructure engineer building systems that hold up under pressure.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23050505'/%3E%3Ctext x='32' y='42' font-family='monospace' font-size='30' fill='%23F1F1EF' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1F1EF;
+    --paper-dim:#E7E6E1;
+    --ink:#16171A;
+    --muted:#6E6E68;
+    --line:#D8D7D1;
+    --black:#050505;
+    --white:#FCFCFA;
+    --accent:#2F5CFF;
+    --accent-ink:#12276B;
+    --radius:2px;
+    --maxw:1200px;
+    --gutter:clamp(24px, 6vw, 72px);
+    font-size:16px;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:auto; }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{ max-width:100%; display:block; }
+  a{ color:inherit; text-decoration:none; }
+  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; margin:0; letter-spacing:-0.01em; }
+  p{ margin:0; }
+  ul{ margin:0; padding:0; list-style:none; }
+  button{ font-family:inherit; cursor:pointer; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding-left:var(--gutter); padding-right:var(--gutter); }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(241,241,239,0.82);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav__inner{
+    max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter);
+    height:64px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav__logo{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.05rem; }
+  .nav__links{ display:flex; gap:2.2rem; }
+  .nav__link{
+    font-size:0.92rem; color:var(--muted); padding:6px 2px; position:relative;
+    transition:color .15s ease;
+  }
+  .nav__link::after{
+    content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
+    background:var(--ink); transform:scaleX(0); transform-origin:left;
+    transition:transform .2s ease;
+  }
+  .nav__link:hover, .nav__link[aria-current="page"]{ color:var(--ink); }
+  .nav__link[aria-current="page"]::after{ transform:scaleX(1); }
+  .nav__toggle{
+    display:none; background:none; border:none; width:32px; height:24px; position:relative; padding:0;
+  }
+  .nav__toggle span{
+    position:absolute; left:0; right:0; height:2px; background:var(--ink); transition:transform .25s ease, opacity .2s ease;
+  }
+  .nav__toggle span:nth-child(1){ top:2px; }
+  .nav__toggle span:nth-child(2){ top:11px; }
+  .nav__toggle span:nth-child(3){ top:20px; }
+  body.menu-open .nav__toggle span:nth-child(1){ transform:translateY(9px) rotate(45deg); }
+  body.menu-open .nav__toggle span:nth-child(2){ opacity:0; }
+  body.menu-open .nav__toggle span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
+
+  .mobile-menu{
+    position:fixed; inset:64px 0 0 0; z-index:90; background:var(--paper);
+    display:flex; flex-direction:column; padding:2.5rem var(--gutter);
+    transform:translateY(-8px); opacity:0; pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  body.menu-open .mobile-menu{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .mobile-menu a{
+    font-family:'Space Grotesk', sans-serif; font-size:2.1rem; padding:0.55rem 0;
+    border-bottom:1px solid var(--line); font-weight:500;
+  }
+
+  /* ---------- LAYOUT / VIEWS ---------- */
+  main{ padding-top:64px; }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .page-enter{ animation:pageIn .5s ease both; }
+  @keyframes pageIn{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
+
+  section{ position:relative; }
+
+  /* ---------- HOME / HERO ---------- */
+  .hero{
+    min-height:calc(100vh - 64px);
+    display:flex; flex-direction:column; justify-content:center;
+    padding:6rem 0 5rem;
+  }
+  .hero__eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color:var(--muted);
+    margin-bottom:1.6rem; opacity:0; animation:fadeUp .7s ease .1s forwards;
+  }
+  .hero__title{
+    font-size:clamp(2.6rem, 8vw, 6.4rem);
+    font-weight:600; line-height:1.02; max-width:14ch;
+    opacity:0; animation:fadeUp .8s ease .2s forwards;
+  }
+  .hero__lead{
+    margin-top:2.2rem; font-size:1.15rem; color:var(--muted); max-width:52ch; line-height:1.7;
+    opacity:0; animation:fadeUp .8s ease .38s forwards;
+  }
+  .hero__lead strong{ color:var(--ink); font-weight:500; }
+  .hero__actions{
+    margin-top:2.6rem; display:flex; gap:1rem; flex-wrap:wrap;
+    opacity:0; animation:fadeUp .8s ease .52s forwards;
+  }
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
+  @media (prefers-reduced-motion: reduce){
+    .hero__eyebrow,.hero__title,.hero__lead,.hero__actions{ animation:none; opacity:1; }
+    .page-enter{ animation:none; }
+  }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:0.5rem;
+    padding:0.9rem 1.6rem; font-size:0.95rem; font-weight:500; border-radius:var(--radius);
+    border:1px solid transparent; transition:background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .btn--primary{ background:var(--ink); color:var(--white); }
+  .btn--primary:hover{ background:var(--accent); }
+  .btn--ghost{ border-color:var(--line); color:var(--ink); }
+  .btn--ghost:hover{ border-color:var(--ink); }
+
+  .hero__meta{
+    margin-top:5rem; display:flex; gap:3rem; flex-wrap:wrap;
+    border-top:1px solid var(--line); padding-top:1.6rem;
+  }
+  .hero__meta div p:first-child{ font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--muted); margin-bottom:0.35rem; }
+  .hero__meta div p:last-child{ font-size:1.05rem; font-weight:500; }
+
+  /* ---------- HOME: STATS STRIP ---------- */
+  .home-stats{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:2.5rem;
+    padding:4.5rem 0; border-top:1px solid var(--line);
+  }
+  .home-stats .num{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:clamp(2.1rem, 4.6vw, 3.2rem); }
+  .home-stats .label{ margin-top:0.6rem; color:var(--muted); font-size:0.92rem; max-width:24ch; line-height:1.5; }
+
+  /* ---------- HOME: AUTOPLAY MARQUEE (swiper-style banner) ---------- */
+  .marquee-section{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--paper-dim); }
+  .marquee-section .section-head{ padding-bottom:2rem; }
+  .marquee{ overflow:hidden; padding-bottom:3.5rem; }
+  .marquee__track{
+    display:flex; gap:1.2rem; width:max-content;
+    animation:marquee-scroll 34s linear infinite;
+  }
+  .marquee:hover .marquee__track, .marquee:focus-within .marquee__track{ animation-play-state:paused; }
+  @keyframes marquee-scroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce){
+    .marquee{ overflow-x:auto; }
+    .marquee__track{ animation:none; width:auto; }
+    .marquee__card[aria-hidden="true"]{ display:none; }
+  }
+  .marquee__card{
+    flex:0 0 auto; width:280px; background:var(--white); border:1px solid var(--line); padding:1.5rem;
+  }
+  .marquee__card h4{ font-size:1.05rem; font-weight:600; }
+  .marquee__card p{ margin-top:0.6rem; color:var(--muted); font-size:0.88rem; line-height:1.6; }
+  .marquee__card span{
+    display:inline-block; margin-top:1rem; font-family:'IBM Plex Mono', monospace; font-size:0.7rem;
+    color:var(--accent-ink); background:#E7ECFF; padding:0.25rem 0.55rem; border-radius:2px;
+  }
+
+  /* ---------- Reversed split-parallax (used on Home) ---------- */
+  @media (min-width:901px){
+    .split-parallax--reverse .split-media{ order:2; }
+    .split-parallax--reverse .split-content{ order:1; }
+  }
+
+  .home-cta{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;
+    padding:4.5rem 0 5.5rem; border-top:1px solid var(--line);
+  }
+  .home-cta h3{ font-size:clamp(1.5rem, 3.4vw, 2.2rem); max-width:16ch; font-weight:600; }
+  .home-cta .btn-row{ display:flex; gap:1rem; flex-wrap:wrap; }
+
+  @media (max-width:700px){
+    .home-stats{ grid-template-columns:1fr; gap:2rem; }
+  }
+
+  /* ---------- SECTION HEADS ---------- */
+  .section-head{ padding:5.5rem 0 3rem; }
+  .section-head h2{ font-size:clamp(2rem, 4.2vw, 3rem); font-weight:600; max-width:16ch; }
+  .section-head p{ margin-top:1rem; color:var(--muted); max-width:48ch; font-size:1.02rem; }
+
+  /* ---------- BACKGROUND IMAGE / QUOTE SECTION ---------- */
+  .quote-bg{
+    min-height:72vh; background-size:cover; background-position:center;
+    display:flex; align-items:center; margin:2rem 0;
+  }
+  .quote-overlay{
+    width:100%; background:linear-gradient(180deg, rgba(5,5,5,0.35), rgba(5,5,5,0.72));
+    padding:6rem var(--gutter); min-height:72vh; display:flex; align-items:center;
+  }
+  .quote-overlay blockquote{
+    max-width:920px; margin:0 auto; color:var(--white);
+    font-family:'Space Grotesk', sans-serif; font-weight:500;
+    font-size:clamp(1.7rem, 4.4vw, 3.1rem); line-height:1.25;
+  }
+  .quote-overlay cite{
+    display:block; margin-top:2rem; font-style:normal; font-family:'IBM Plex Mono', monospace;
+    font-size:0.9rem; color:rgba(252,252,250,0.7);
+  }
+
+  /* ---------- WORK CAROUSEL ---------- */
+  .work-carousel{ padding-bottom:2rem; }
+  .work-track{
+    display:flex; gap:1.4rem; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:0 var(--gutter) 1rem; margin:0 calc(var(--gutter) * -1);
+    scrollbar-width:none;
+  }
+  .work-track::-webkit-scrollbar{ display:none; }
+  .work-card{
+    scroll-snap-align:start; flex:0 0 auto; width:min(74vw, 460px);
+    background:var(--white); border:1px solid var(--line);
+  }
+  .work-card__media{ aspect-ratio:4/3; overflow:hidden; background:var(--paper-dim); }
+  .work-card__media img{ width:100%; height:100%; object-fit:cover; transition:transform .5s ease; }
+  .work-card:hover .work-card__media img{ transform:scale(1.045); }
+  .work-card__body{ padding:1.6rem; }
+  .work-card__body h3{ font-size:1.3rem; font-weight:600; }
+  .work-card__body p{ margin-top:0.65rem; color:var(--muted); font-size:0.96rem; line-height:1.65; }
+  .work-card__tags{ display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.1rem; }
+  .work-card__tags span{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--accent-ink);
+    background:#E7ECFF; padding:0.3rem 0.55rem; border-radius:2px;
+  }
+
+  .carousel-controls{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 var(--gutter) 4rem;
+  }
+  .carousel-dots{ display:flex; gap:0.5rem; }
+  .carousel-dots button{
+    width:8px; height:8px; border-radius:50%; border:1px solid var(--muted); background:transparent; padding:0;
+  }
+  .carousel-dots button[aria-current="true"]{ background:var(--ink); border-color:var(--ink); }
+  .carousel-arrows{ display:flex; gap:0.6rem; }
+  .carousel-btn{
+    width:42px; height:42px; border-radius:50%; border:1px solid var(--line); background:var(--paper);
+    display:flex; align-items:center; justify-content:center; transition:border-color .15s ease, background .15s ease;
+  }
+  .carousel-btn:hover{ border-color:var(--ink); background:var(--white); }
+  .carousel-btn svg{ width:16px; height:16px; }
+
+  /* ---------- MASONRY GALLERY ---------- */
+  .gallery{
+    columns:3 260px; column-gap:1rem; padding:0 var(--gutter) 5.5rem;
+  }
+  .gallery__item{ break-inside:avoid; margin-bottom:1rem; position:relative; overflow:hidden; background:var(--paper-dim); }
+  .gallery__item img{ width:100%; display:block; transition:transform .5s ease; }
+  .gallery__item:hover img{ transform:scale(1.04); }
+  .gallery__cap{
+    position:absolute; left:0; right:0; bottom:0; padding:0.9rem 1rem 0.8rem;
+    background:linear-gradient(0deg, rgba(5,5,5,0.75), rgba(5,5,5,0));
+    color:var(--white); font-size:0.82rem; opacity:0; transform:translateY(6px);
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .gallery__item:hover .gallery__cap{ opacity:1; transform:translateY(0); }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:4rem; padding:0 var(--gutter) 4rem;
+  }
+  .about-bio p{ font-size:1.06rem; color:var(--ink); max-width:56ch; line-height:1.8; }
+  .about-bio p + p{ margin-top:1.2rem; }
+  .skills{ margin-top:3rem; }
+  .skill-group{ margin-bottom:1.6rem; }
+  .skill-group h4{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--muted); margin-bottom:0.7rem; font-weight:400;
+  }
+  .skill-group ul{ display:flex; flex-wrap:wrap; gap:0.5rem; }
+  .skill-group li{
+    font-size:0.9rem; padding:0.4rem 0.75rem; border:1px solid var(--line); border-radius:2px;
+  }
+  .about-portrait{ position:relative; overflow:hidden; aspect-ratio:3/4; background:var(--paper-dim); align-self:start; }
+  .about-portrait img{ width:100%; height:100%; object-fit:cover; }
+
+  /* ---------- SPLIT PARALLAX ---------- */
+  .split-parallax{
+    display:grid; grid-template-columns:1fr 1fr; align-items:stretch; min-height:70vh;
+    margin:2rem 0;
+  }
+  .split-media{ position:relative; overflow:hidden; min-height:340px; }
+  .split-media img{
+    position:absolute; top:-12%; left:0; width:100%; height:124%; object-fit:cover; will-change:transform;
+  }
+  .split-content{
+    display:flex; flex-direction:column; justify-content:center; padding:4rem var(--gutter);
+    background:var(--black); color:var(--white);
+  }
+  .split-content h3{ font-size:clamp(1.6rem, 3.2vw, 2.3rem); font-weight:600; max-width:14ch; }
+  .split-content p{ margin-top:1.4rem; color:rgba(252,252,250,0.72); max-width:44ch; line-height:1.75; }
+  .split-content ol{ margin-top:1.8rem; counter-reset:step; }
+  .split-content ol li{
+    counter-increment:step; padding-left:2.2rem; position:relative; margin-bottom:1rem; font-size:0.95rem; color:rgba(252,252,250,0.85);
+  }
+  .split-content ol li::before{
+    content:counter(step, decimal-leading-zero); position:absolute; left:0; top:0;
+    font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--accent);
+  }
+
+  /* ---------- EXPERIENCE: HIGHLIGHTS (carousel + list, per reference) ---------- */
+  .highlights{ display:grid; grid-template-columns:1.4fr 1fr; gap:2.5rem; padding:0 0 4.5rem; align-items:start; }
+  .highlights__carousel{ position:relative; }
+  .highlights__track{ position:relative; aspect-ratio:16/9; overflow:hidden; background:var(--paper-dim); }
+  .highlights__slide{ position:absolute; inset:0; opacity:0; transition:opacity .5s ease; }
+  .highlights__slide.is-active{ opacity:1; }
+  .highlights__slide a{ position:absolute; inset:0; display:block; }
+  .highlights__slide img{ width:100%; height:100%; object-fit:cover; }
+  .highlights__caption{
+    position:absolute; left:0; right:0; bottom:0; padding:1.5rem 1.7rem;
+    background:linear-gradient(0deg, rgba(5,5,5,0.78), rgba(5,5,5,0));
+  }
+  .highlights__caption h4{ font-size:1.15rem; font-weight:600; color:var(--white); }
+  .highlights__caption p{ margin-top:0.4rem; font-size:0.85rem; color:rgba(252,252,250,0.82); }
+  .highlights__dots{ display:flex; justify-content:center; gap:0.5rem; margin-top:1.1rem; }
+  .highlights__dots button{
+    width:8px; height:8px; border-radius:5px; border:1px solid var(--muted); background:transparent; padding:0;
+    transition:width .25s ease, background .2s ease, border-color .2s ease;
+  }
+  .highlights__dots button.is-active{ width:22px; background:var(--ink); border-color:var(--ink); }
+
+  .highlights__list{ border-top:1px solid var(--line); }
+  .highlights__tabs{ display:flex; gap:1.6rem; padding:1rem 0; border-bottom:1px solid var(--line); }
+  .highlights__tabs li{ font-size:0.84rem; color:var(--muted); padding-bottom:0.55rem; position:relative; top:1px; }
+  .highlights__tabs li.is-active{ color:var(--ink); border-bottom:2px solid var(--ink); }
+  .highlights__items li{ border-bottom:1px solid var(--line); }
+  .highlights__items a{ display:flex; flex-direction:column; gap:0.3rem; padding:1rem 0.2rem; }
+  .highlights__items a:hover .highlights__item-title{ color:var(--accent); }
+  .highlights__item-title{ font-size:0.96rem; font-weight:500; transition:color .15s ease; }
+  .highlights__item-date{ font-size:0.78rem; color:var(--muted); }
+  .highlights__more{
+    display:inline-block; margin-top:1.3rem; font-size:0.88rem; border-bottom:1px solid var(--ink); padding-bottom:2px;
+  }
+  @media (max-width:900px){
+    .highlights{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- EXPERIENCE DETAIL (case study) PAGES ---------- */
+  .case{ padding:6.5rem 0 5rem; }
+  .case__back{
+    font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--muted);
+    display:inline-flex; align-items:center; gap:0.4rem; margin-bottom:2.5rem;
+  }
+  .case__back:hover{ color:var(--ink); }
+  .case__meta{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color:var(--muted); }
+  .case__title{ margin-top:0.9rem; font-size:clamp(2rem, 5vw, 3.1rem); font-weight:600; max-width:20ch; }
+  .case__org{ margin-top:0.7rem; font-size:1.12rem; color:var(--muted); }
+  .case__lead{ margin-top:2.2rem; font-size:1.08rem; line-height:1.8; max-width:65ch; }
+  .case__list{ margin-top:2.2rem; max-width:65ch; }
+  .case__list li{ position:relative; padding-left:1.4rem; margin-bottom:0.75rem; font-size:0.98rem; line-height:1.6; }
+  .case__list li::before{ content:'—'; position:absolute; left:0; color:var(--muted); }
+  .case__gallery-head{ margin-top:4.5rem; margin-bottom:1.6rem; }
+  .case__gallery-head h3{ font-size:1.3rem; font-weight:600; }
+  .case__gallery-head p{ margin-top:0.5rem; color:var(--muted); font-size:0.92rem; }
+  .case__nav{
+    display:flex; justify-content:space-between; margin-top:5rem; padding-top:2.2rem;
+    border-top:1px solid var(--line); flex-wrap:wrap; gap:1.2rem;
+  }
+  .case__nav a{ font-size:0.98rem; font-weight:500; }
+  .case__nav a:hover{ color:var(--accent); }
+  .case__nav .dir{ display:block; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted); margin-bottom:0.35rem; font-weight:400; }
+  .case__nav .to-next{ text-align:right; }
+
+  .case-layout{ display:grid; grid-template-columns:1fr 300px; gap:4rem; align-items:start; margin-top:2.4rem; }
+  .case-figure{ margin:2.4rem 0; }
+  .case-figure img{ width:100%; aspect-ratio:16/9; object-fit:cover; display:block; background:var(--paper-dim); }
+  .case-figure figcaption{ margin-top:0.7rem; font-size:0.85rem; color:var(--muted); }
+  .case-figure--hero{ margin-top:0; margin-bottom:2.6rem; }
+  .case-figure--hero img{ aspect-ratio:16/8; }
+
+  .case-sidebar{ position:sticky; top:96px; border-left:1px solid var(--line); padding-left:2.2rem; }
+  .case-sidebar h4{ font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--muted); font-weight:400; margin-bottom:0.4rem; }
+  .case-sidebar ul{ border-top:1px solid var(--line); }
+  .case-sidebar li{ border-bottom:1px solid var(--line); }
+  .case-sidebar a{ display:flex; flex-direction:column; gap:0.3rem; padding:0.95rem 0; font-size:0.92rem; font-weight:500; }
+  .case-sidebar a:hover{ color:var(--accent); }
+  .case-sidebar li.is-current a{ color:var(--ink); }
+  .case-sidebar li.is-current .case-sidebar__date{ color:var(--accent-ink); }
+  .case-sidebar__date{ display:block; margin-top:0.3rem; font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted); font-weight:400; }
+
+  @media (max-width:900px){
+    .case-layout{ grid-template-columns:1fr; gap:2.5rem; }
+    .case-sidebar{ position:static; border-left:none; padding-left:0; border-top:1px solid var(--line); padding-top:1.8rem; }
+  }
+  .timeline{ padding:0 var(--gutter) 5.5rem; }
+  .timeline__item{
+    display:grid; grid-template-columns:140px 1fr; gap:2rem; padding:2.2rem 0; border-top:1px solid var(--line);
+    scroll-margin-top:84px;
+  }
+  .timeline__item:last-child{ border-bottom:1px solid var(--line); }
+  .timeline__date{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color:var(--muted); padding-top:0.2rem; }
+  .timeline__role{ font-size:1.25rem; font-weight:600; }
+  .timeline__org{ color:var(--muted); font-size:0.95rem; margin-top:0.2rem; }
+  .timeline__desc{ margin-top:0.9rem; color:var(--ink); max-width:60ch; line-height:1.7; font-size:0.98rem; }
+
+  /* ---------- CONTACT ---------- */
+  .contact{ padding:6rem var(--gutter) 5rem; }
+  .contact h2{ font-size:clamp(2rem, 4.5vw, 2.8rem); max-width:18ch; }
+  .contact__email{
+    display:inline-flex; align-items:baseline; gap:1rem; margin-top:2.4rem;
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:clamp(1.6rem, 6vw, 3.6rem);
+    border-bottom:2px solid var(--ink); padding-bottom:0.4rem;
+  }
+  .copy-btn{
+    background:none; border:1px solid var(--line); border-radius:2px; font-size:0.82rem; padding:0.5rem 0.85rem;
+    color:var(--muted); align-self:center; transition:border-color .15s ease, color .15s ease;
+  }
+  .copy-btn:hover{ border-color:var(--ink); color:var(--ink); }
+  .socials{ margin-top:3.5rem; display:flex; gap:2.2rem; flex-wrap:wrap; }
+  .socials a{ font-size:0.95rem; color:var(--muted); border-bottom:1px solid transparent; transition:border-color .15s ease, color .15s ease; }
+  .socials a:hover{ color:var(--ink); border-color:var(--ink); }
+
+  .site-footer{
+    border-top:1px solid var(--line); padding:2rem var(--gutter);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.6rem;
+    font-size:0.82rem; color:var(--muted);
+  }
+
+  /* ---------- SOCIAL / CONTACT SIDE PANEL ---------- */
+  .social-toggle{
+    position:fixed; top:50%; right:0; transform:translateY(-50%); z-index:120;
+    width:40px; height:92px; border:1px solid var(--line); border-right:none;
+    background:var(--paper); border-radius:8px 0 0 8px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:background .2s ease;
+  }
+  .social-toggle:hover{ background:var(--white); }
+  .social-toggle__icon{ width:14px; height:14px; position:relative; }
+  .social-toggle__icon span{ position:absolute; background:var(--ink); transition:transform .3s ease; }
+  .social-toggle__icon span:nth-child(1){ top:6px; left:0; width:14px; height:1.5px; }
+  .social-toggle__icon span:nth-child(2){ top:0; left:6px; width:1.5px; height:14px; }
+  body.social-open .social-toggle__icon span:nth-child(1){ transform:rotate(45deg); }
+  body.social-open .social-toggle__icon span:nth-child(2){ transform:rotate(-45deg); }
+
+  .social-overlay{
+    position:fixed; inset:0; background:rgba(5,5,5,0.32); z-index:110;
+    opacity:0; pointer-events:none; transition:opacity .4s ease;
+  }
+  body.social-open .social-overlay{ opacity:1; pointer-events:auto; }
+
+  .social-panel{
+    position:fixed; top:0; right:0; height:100dvh; z-index:115;
+    width:420px; max-width:calc(100vw - 3rem);
+    background:var(--paper); border-left:1px solid var(--line);
+    transform:translateX(100%); transition:transform .6s ease;
+    display:flex; flex-direction:column; justify-content:center; gap:3rem;
+    padding:3rem 2.8rem; overflow-y:auto;
+  }
+  body.social-open .social-panel{ transform:translateX(0); }
+  .social-panel__grid{ display:flex; gap:3.5rem; flex-wrap:wrap; }
+  .social-panel__label{
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:0.05em; margin-bottom:1.1rem;
+  }
+  .social-panel__social li{ margin-bottom:0.75rem; }
+  .social-panel__social a{ font-size:1.1rem; }
+  .social-panel__social a:hover{ color:var(--accent); text-decoration:underline; }
+  .social-panel__now li{ margin-bottom:1.1rem; }
+  .social-panel__now li span{ display:block; }
+  .social-panel__now .k{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted); margin-bottom:0.2rem; }
+  .social-panel__now .v{ font-size:0.98rem; }
+  .social-panel__contact{ padding-top:2.2rem; border-top:1px solid var(--line); }
+  .social-panel__contact a{ font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.15rem; }
+  .social-panel__contact a:hover{ color:var(--accent); }
+  @media (max-width:560px){
+    .social-panel{ width:100vw; max-width:100vw; padding:3rem 2rem; }
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:900px){
+    .nav__links{ display:none; }
+    .nav__toggle{ display:block; }
+    .about-grid{ grid-template-columns:1fr; }
+    .about-portrait{ order:-1; aspect-ratio:16/10; }
+    .split-parallax{ grid-template-columns:1fr; }
+    .split-media{ min-height:300px; }
+    .gallery{ columns:2 200px; }
+    .timeline__item{ grid-template-columns:1fr; gap:0.5rem; }
+  }
+  @media (max-width:560px){
+    .hero__meta{ gap:1.6rem; }
+    .work-card{ width:82vw; }
+    .gallery{ columns:1; }
+    .contact__email{ flex-direction:column; align-items:flex-start; gap:0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<a class="visually-hidden" href="#main" style="position:absolute; left:-9999px;">Skip to content</a>
+
+<header class="nav">
+  <div class="nav__inner">
+    <a href="#home" class="nav__logo" data-route="home">Kenji Aditya</a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#home" class="nav__link" data-route="home">Home</a>
+      <a href="#work" class="nav__link" data-route="work">Work</a>
+      <a href="#about" class="nav__link" data-route="about">About</a>
+      <a href="#experience" class="nav__link" data-route="experience">Experience</a>
+      <a href="#contact" class="nav__link" data-route="contact">Contact</a>
+    </nav>
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" data-route="home">Home</a>
+  <a href="#work" data-route="work">Work</a>
+  <a href="#about" data-route="about">About</a>
+  <a href="#experience" data-route="experience">Experience</a>
+  <a href="#contact" data-route="contact">Contact</a>
+</div>
+
+<button class="social-toggle" id="socialToggle" aria-label="Open social links and contact" aria-expanded="false" aria-controls="socialPanel">
+  <span class="social-toggle__icon"><span></span><span></span></span>
+</button>
+<div class="social-overlay" id="socialOverlay"></div>
+<aside class="social-panel" id="socialPanel" aria-hidden="true">
+  <div class="social-panel__grid">
+    <div>
+      <p class="social-panel__label">Social</p>
+      <ul class="social-panel__social">
+        <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://x.com" target="_blank" rel="noopener">X / Twitter</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="social-panel__label">Now</p>
+      <ul class="social-panel__now">
+        <li><span class="k">Building</span><span class="v">A deploy scheduler for Wharf</span></li>
+        <li><span class="k">Learning</span><span class="v">Zig, slowly, with an AI pair</span></li>
+        <li><span class="k">Reading</span><span class="v">Designing Data-Intensive Applications (again)</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="social-panel__contact">
+    <p class="social-panel__label">Get in touch</p>
+    <a href="mailto:hello@kenjiaditya.dev">hello@kenjiaditya.dev</a>
+  </div>
+</aside>
+
+<main id="main">
+
+  <!-- HOME -->
+  <section class="view" id="view-home" data-view="home">
+    <div class="hero wrap">
+      <p class="hero__eyebrow mono">Software Engineer · Bandung, Indonesia</p>
+      <h1 class="hero__title">I build systems that hold up under pressure.</h1>
+      <p class="hero__lead">I'm Kenji — a backend and infrastructure engineer. Most days I'm in <strong>Go</strong> or <strong>Rust</strong>, moving data between services that aren't allowed to fall over, and the rest of the time I'm arguing with distributed systems until they behave.</p>
+      <div class="hero__actions">
+        <a href="#work" class="btn btn--primary" data-route="work">See selected work</a>
+        <a href="#contact" class="btn btn--ghost" data-route="contact">Get in touch</a>
+      </div>
+      <div class="hero__meta">
+        <div><p>Currently</p><p>Senior Backend Engineer, Nimbus Systems</p></div>
+        <div><p>Focus</p><p>Distributed systems &amp; developer tooling</p></div>
+        <div><p>Based in</p><p>Bandung, Indonesia</p></div>
+      </div>
+    </div>
+
+    <div class="wrap home-stats">
+      <div>
+        <div class="num">40k<span class="mono" style="font-size:1.4rem;">/s</span></div>
+        <p class="label">Peak transactions per second Ledger reconciles without falling behind.</p>
+      </div>
+      <div>
+        <div class="num">6</div>
+        <p class="label">Internal teams currently provisioning services through Wharf.</p>
+      </div>
+      <div>
+        <div class="num">0</div>
+        <p class="label">Hours of planned downtime during the last monolith migration.</p>
+      </div>
+    </div>
+
+    <div class="split-parallax split-parallax--reverse">
+      <div class="split-content">
+        <h3>Right now, I'm building</h3>
+        <p>A queueing layer for Wharf that lets teams schedule risky deploys during low-traffic windows automatically, instead of a human watching a dashboard at midnight.</p>
+        <p style="margin-top:1rem;"><a href="#work" class="btn btn--ghost" data-route="work" style="border-color:rgba(252,252,250,0.3); color:var(--white);">See the rest of the work →</a></p>
+      </div>
+      <div class="split-media"><img data-parallax src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80" alt="Close-up of hands typing on a laptop keyboard at night"></div>
+    </div>
+
+    <div class="quote-bg" style="background-image:url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=1800&q=80');">
+      <div class="quote-overlay">
+        <blockquote>
+          "Most of my work is invisible when it's working. That's usually the sign it's done right."
+          <cite>— on nine years of backend engineering</cite>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="marquee-section">
+      <div class="wrap section-head" style="padding-bottom:1.5rem;">
+        <h2 style="font-size:clamp(1.6rem, 3vw, 2.2rem);">Talks &amp; writing</h2>
+        <p>Things I've written or spoken about recently. Hover to pause, or scroll on touch devices.</p>
+      </div>
+      <div class="marquee">
+        <ul class="marquee__track" id="marqueeTrack">
+          <li class="marquee__card"><h4>Designing for failure</h4><p>A meetup talk on building services that degrade gracefully instead of falling over.</p><span>Talk</span></li>
+          <li class="marquee__card"><h4>Why we moved off cron</h4><p>What broke first, and the scheduler we built to replace it.</p><span>Writing</span></li>
+          <li class="marquee__card"><h4>CRDTs in practice</h4><p>Notes from building Fieldnotes' offline sync engine.</p><span>Workshop</span></li>
+          <li class="marquee__card"><h4>Debugging distributed systems</h4><p>A short, opinionated guide to finding the lie in your logs.</p><span>Talk</span></li>
+          <li class="marquee__card"><h4>On boring infrastructure</h4><p>Why "boring" is the highest compliment I give a system.</p><span>Writing</span></li>
+          <li class="marquee__card" aria-hidden="true"><h4>Designing for failure</h4><p>A meetup talk on building services that degrade gracefully instead of falling over.</p><span>Talk</span></li>
+          <li class="marquee__card" aria-hidden="true"><h4>Why we moved off cron</h4><p>What broke first, and the scheduler we built to replace it.</p><span>Writing</span></li>
+          <li class="marquee__card" aria-hidden="true"><h4>CRDTs in practice</h4><p>Notes from building Fieldnotes' offline sync engine.</p><span>Workshop</span></li>
+          <li class="marquee__card" aria-hidden="true"><h4>Debugging distributed systems</h4><p>A short, opinionated guide to finding the lie in your logs.</p><span>Talk</span></li>
+          <li class="marquee__card" aria-hidden="true"><h4>On boring infrastructure</h4><p>Why "boring" is the highest compliment I give a system.</p><span>Writing</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="wrap home-cta">
+      <h3>Want the longer version, with real numbers?</h3>
+      <div class="btn-row">
+        <a href="#experience" class="btn btn--ghost" data-route="experience">View experience</a>
+        <a href="#contact" class="btn btn--primary" data-route="contact">Say hello</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section class="view" id="view-work" data-view="work">
+    <div class="wrap section-head">
+      <h2>Selected work</h2>
+      <p>A few systems I've designed, built, and kept alive at 3am. Drag or use the arrows to browse.</p>
+    </div>
+
+    <div class="work-carousel">
+      <ul class="work-track" id="workTrack">
+        <li class="work-card">
+          <div class="work-card__media"><img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1000&q=80" alt="Laptop showing a code editor with a dark theme"></div>
+          <div class="work-card__body">
+            <h3>Ledger</h3>
+            <p>A high-throughput reconciliation engine that matches transactions across five payment providers in near real time.</p>
+            <div class="work-card__tags"><span>Go</span><span>Postgres</span><span>Kafka</span></div>
+          </div>
+        </li>
+        <li class="work-card">
+          <div class="work-card__media"><img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1000&q=80" alt="Server racks in a data center corridor"></div>
+          <div class="work-card__body">
+            <h3>Wharf</h3>
+            <p>An internal platform that lets product teams provision a new service, with sane defaults, in under ten minutes.</p>
+            <div class="work-card__tags"><span>Kubernetes</span><span>Terraform</span><span>Go</span></div>
+          </div>
+        </li>
+        <li class="work-card">
+          <div class="work-card__media"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80" alt="Dashboard with charts and metrics on a monitor"></div>
+          <div class="work-card__body">
+            <h3>Pulse</h3>
+            <p>A real-time observability dashboard for microservices, built when our old one couldn't keep up past 50k events/sec.</p>
+            <div class="work-card__tags"><span>Rust</span><span>ClickHouse</span><span>WebSockets</span></div>
+          </div>
+        </li>
+        <li class="work-card">
+          <div class="work-card__media"><img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1000&q=80" alt="Team reviewing a project together at a desk"></div>
+          <div class="work-card__body">
+            <h3>Fieldnotes</h3>
+            <p>An offline-first sync engine for field researchers working with no signal for days at a time, and no tolerance for lost data.</p>
+            <div class="work-card__tags"><span>TypeScript</span><span>CRDT</span><span>SQLite</span></div>
+          </div>
+        </li>
+      </ul>
+      <div class="carousel-controls wrap">
+        <div class="carousel-dots" id="workDots"></div>
+        <div class="carousel-arrows">
+          <button class="carousel-btn" id="workPrev" aria-label="Previous project">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <button class="carousel-btn" id="workNext" aria-label="Next project">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap section-head" style="padding-top:1rem;">
+      <h2 style="font-size:clamp(1.6rem, 3vw, 2.2rem);">Lab notes</h2>
+      <p>Unpolished snapshots from the actual process — whiteboards, terminals, and the occasional 2am debugging session.</p>
+    </div>
+    <div class="gallery">
+      <div class="gallery__item"><img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=700&q=80" alt="Close up of hands typing on a laptop keyboard"><span class="gallery__cap">Load-testing Ledger past 40k tx/s</span></div>
+      <div class="gallery__item"><img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=700&q=80" alt="Laptop screen showing lines of code up close"><span class="gallery__cap">Wharf's provisioning flow, first draft</span></div>
+      <div class="gallery__item"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=700&q=80" alt="Colorful code on a computer screen"><span class="gallery__cap">Pulse ingestion pipeline, whiteboarded</span></div>
+      <div class="gallery__item"><img src="https://images.unsplash.com/photo-1483058712412-4245e9b90334?auto=format&fit=crop&w=700&q=80" alt="Person working at a desk in low light"><span class="gallery__cap">Debugging a memory leak, 2am</span></div>
+      <div class="gallery__item"><img src="https://images.unsplash.com/photo-1550439062-609e1531270e?auto=format&fit=crop&w=700&q=80" alt="Notebook and laptop arranged on a desk"><span class="gallery__cap">Planning Fieldnotes' sync protocol</span></div>
+      <div class="gallery__item"><img src="https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?auto=format&fit=crop&w=700&q=80" alt="Modern open workspace with desks and laptops"><span class="gallery__cap">Where most of this gets built</span></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="view" id="view-about" data-view="about">
+    <div class="wrap section-head">
+      <h2>About</h2>
+    </div>
+    <div class="wrap about-grid">
+      <div class="about-bio">
+        <p>I've spent the last several years working on the parts of software most people never see: the queues, the retries, the migrations that have to run at 3am without anyone noticing. I like systems that are boring in production and interesting to build.</p>
+        <p>Before backend work, I studied computer science and spent a couple of years doing freelance web development around Bandung — which is mostly where I learned that a fast demo and a system that survives real traffic are two very different things.</p>
+        <p>Outside of work I mentor junior engineers, contribute to a couple of open-source CLI tools, and am slowly rewriting a side project in Rust for no good reason other than wanting to.</p>
+
+        <div class="skills">
+          <h4 style="font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--muted); font-weight:400; margin-bottom:0.9rem;">How I think about tools now</h4>
+          <p style="font-size:1.02rem; line-height:1.75; max-width:56ch;">I don't hold tightly to a fixed stack anymore. Go, Rust, and TypeScript are the constants, but the rest changes by the project — with an AI pair to learn fast, picking up an unfamiliar language or a new part of the infra isn't the blocker it used to be. What matters more than any one tool is knowing what to build and why.</p>
+          <p style="margin-top:1.1rem; font-size:1.02rem; line-height:1.75; max-width:56ch;">So if you ask about my experience, I'll usually answer with what I've actually shipped rather than what's listed on a résumé — this year alone that's included Zig, a small WASM plugin runtime, and pgvector, each picked up mid-project with an AI doing a lot of the heavy lifting on the parts I hadn't touched before.</p>
+        </div>
+      </div>
+
+      <div class="about-portrait">
+        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=80" alt="Engineer working thoughtfully at a laptop">
+      </div>
+    </div>
+
+    <div class="quote-bg" style="background-image:url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1800&q=80');">
+      <div class="quote-overlay">
+        <blockquote>
+          "Good systems are boring. That's the whole point — the interesting part happened months before anyone noticed it working."
+          <cite>— something I tell every junior engineer I mentor</cite>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="split-parallax">
+      <div class="split-media"><img data-parallax src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1400&q=80" alt="Minimal desk setup with laptop and coffee"></div>
+      <div class="split-content">
+        <h3>How I approach a new system</h3>
+        <p>The shape barely changes, even when the problem does. It keeps me from over-engineering on day one and under-engineering by month three.</p>
+        <ol>
+          <li>Write down what "on fire" looks like before writing any code</li>
+          <li>Design for the failure mode, not the happy path</li>
+          <li>Ship the boring version first</li>
+          <li>Add complexity only when the data asks for it</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="view" id="view-experience" data-view="experience">
+    <div class="wrap section-head">
+      <h2>Experience</h2>
+      <p>A rough timeline of where I've worked and what I was mostly responsible for.</p>
+    </div>
+
+    <div class="wrap highlights">
+      <div class="highlights__carousel">
+        <div class="highlights__track" id="expTrack">
+          <div class="highlights__slide is-active" data-index="0">
+            <a href="#exp-1" data-route="exp-1">
+              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80" alt="Team celebrating a successful project launch">
+              <div class="highlights__caption"><h4>Zero-downtime migration, shipped</h4><p>Nimbus Systems, 2023</p></div>
+            </a>
+          </div>
+          <div class="highlights__slide" data-index="1">
+            <a href="#exp-1" data-route="exp-1">
+              <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80" alt="Code editor open on a laptop screen">
+              <div class="highlights__caption"><h4>Rebuilding the reconciliation pipeline</h4><p>Nimbus Systems, 2023</p></div>
+            </a>
+          </div>
+          <div class="highlights__slide" data-index="2">
+            <a href="#exp-2" data-route="exp-2">
+              <img src="https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=1200&q=80" alt="Person speaking to a small audience">
+              <div class="highlights__caption"><h4>First conference talk on distributed systems</h4><p>Arta Digital, 2022</p></div>
+            </a>
+          </div>
+          <div class="highlights__slide" data-index="3">
+            <a href="#exp-3" data-route="exp-3">
+              <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" alt="Small team reviewing work together">
+              <div class="highlights__caption"><h4>Where it started — three-person studio</h4><p>Studio Delapan, 2019</p></div>
+            </a>
+          </div>
+        </div>
+        <div class="highlights__dots" id="expDots"></div>
+      </div>
+
+      <div class="highlights__list">
+        <ul class="highlights__tabs"><li class="is-active">Karier</li></ul>
+        <ul class="highlights__items" id="expItems">
+          <li data-index="0"><a href="#exp-1" data-route="exp-1"><span class="highlights__item-title">Senior Backend Engineer — Nimbus Systems</span><span class="highlights__item-date mono">2023 — Present</span></a></li>
+          <li data-index="1"><a href="#exp-2" data-route="exp-2"><span class="highlights__item-title">Backend Engineer — Arta Digital</span><span class="highlights__item-date mono">2021 — 2023</span></a></li>
+          <li data-index="2"><a href="#exp-3" data-route="exp-3"><span class="highlights__item-title">Software Engineer — Studio Delapan</span><span class="highlights__item-date mono">2019 — 2021</span></a></li>
+          <li data-index="3"><a href="#exp-4" data-route="exp-4"><span class="highlights__item-title">Freelance Developer — Independent</span><span class="highlights__item-date mono">2017 — 2019</span></a></li>
+        </ul>
+        <a href="#exp-1" data-route="exp-1" class="highlights__more">Lihat pengalaman lengkap</a>
+      </div>
+    </div>
+
+    <div class="wrap" style="padding-bottom:5.5rem;">
+      <p style="color:var(--muted); font-size:0.9rem;">Click any role above for the full story, with documentation photos.</p>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE DETAIL: NIMBUS SYSTEMS -->
+  <section class="view" id="view-exp-1" data-view="exp-1">
+    <div class="wrap case">
+      <a href="#experience" data-route="experience" class="case__back">← Back to experience</a>
+      <p class="case__meta">2023 — Present · Nimbus Systems</p>
+      <h1 class="case__title">Senior Backend Engineer</h1>
+      <p class="case__org">Leading the payments infrastructure team.</p>
+
+      <div class="case-layout">
+        <article class="case-article">
+          <figure class="case-figure case-figure--hero">
+            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80" alt="Server racks in a data center corridor">
+            <figcaption>The infrastructure we were migrating off of</figcaption>
+          </figure>
+
+          <p class="case__lead">I joined to help stabilize a payments platform that was growing faster than its infrastructure could handle. The biggest problem was reconciliation — thousands of transactions a minute across five providers, with no reliable way to catch mismatches until finance found them days later.</p>
+
+          <figure class="case-figure">
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80" alt="Laptop screen showing lines of code up close">
+            <figcaption>Reconciliation pipeline, mid-rewrite</figcaption>
+          </figure>
+
+          <p class="case__lead">Over eighteen months we rebuilt that pipeline from the ground up, and I ended up owning the internal platform team as well, since every reliability problem kept tracing back to how services were provisioned in the first place.</p>
+
+          <ul class="case__list">
+            <li>Rebuilt the reconciliation pipeline to handle 40k+ transactions per second with sub-minute mismatch detection</li>
+            <li>Migrated the core services to a new provisioning platform (Wharf) with zero planned downtime</li>
+            <li>Grew the platform team from two people to six, and wrote the onboarding playbook they still use</li>
+          </ul>
+
+          <figure class="case-figure">
+            <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80" alt="Team celebrating a successful project launch">
+            <figcaption>The moment the migration finished clean</figcaption>
+          </figure>
+
+          <div class="case__nav">
+            <span></span>
+            <a href="#exp-2" data-route="exp-2" class="to-next"><span class="dir">Next</span>Backend Engineer, Arta Digital</a>
+          </div>
+        </article>
+
+        <aside class="case-sidebar">
+          <h4>Pengalaman lain</h4>
+          <ul>
+            <li class="is-current"><a href="#exp-1" data-route="exp-1">Senior Backend Engineer<span class="case-sidebar__date">Nimbus Systems · 2023—Present</span></a></li>
+            <li><a href="#exp-2" data-route="exp-2">Backend Engineer<span class="case-sidebar__date">Arta Digital · 2021—2023</span></a></li>
+            <li><a href="#exp-3" data-route="exp-3">Software Engineer<span class="case-sidebar__date">Studio Delapan · 2019—2021</span></a></li>
+            <li><a href="#exp-4" data-route="exp-4">Freelance Developer<span class="case-sidebar__date">Independent · 2017—2019</span></a></li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE DETAIL: ARTA DIGITAL -->
+  <section class="view" id="view-exp-2" data-view="exp-2">
+    <div class="wrap case">
+      <a href="#experience" data-route="experience" class="case__back">← Back to experience</a>
+      <p class="case__meta">2021 — 2023 · Arta Digital</p>
+      <h1 class="case__title">Backend Engineer</h1>
+      <p class="case__org">Owned the order-processing service for a fast-growing logistics product.</p>
+
+      <div class="case-layout">
+        <article class="case-article">
+          <figure class="case-figure case-figure--hero">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80" alt="Dashboard with charts and metrics on a monitor">
+            <figcaption>Watching traffic shift during cutover</figcaption>
+          </figure>
+
+          <p class="case__lead">Arta Digital's order system was a single Rails monolith handling everything from inventory to driver dispatch, and it was starting to fall over during peak hours. My job was to pull the order-processing logic out into its own service without breaking anything customers depended on.</p>
+
+          <figure class="case-figure">
+            <img src="https://images.unsplash.com/photo-1483058712412-4245e9b90334?auto=format&fit=crop&w=1200&q=80" alt="Person working at a desk in low light">
+            <figcaption>Late night before the final cutover</figcaption>
+          </figure>
+
+          <p class="case__lead">The migration ran alongside the existing monolith for four months, with traffic shifted over gradually and a rollback path kept ready at every stage. It was also where I gave my first conference talk, on what that gradual-migration process actually looked like in practice.</p>
+
+          <ul class="case__list">
+            <li>Extracted order-processing into an independent service with no planned downtime during cutover</li>
+            <li>Cut average order-confirmation latency significantly during peak hours</li>
+            <li>Spoke at a local meetup about strangler-pattern migrations in production</li>
+          </ul>
+
+          <figure class="case-figure">
+            <img src="https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=1200&q=80" alt="Person speaking to a small audience">
+            <figcaption>First conference talk, on the migration itself</figcaption>
+          </figure>
+
+          <div class="case__nav">
+            <a href="#exp-1" data-route="exp-1"><span class="dir">Previous</span>Senior Backend Engineer, Nimbus</a>
+            <a href="#exp-3" data-route="exp-3" class="to-next"><span class="dir">Next</span>Software Engineer, Studio Delapan</a>
+          </div>
+        </article>
+
+        <aside class="case-sidebar">
+          <h4>Pengalaman lain</h4>
+          <ul>
+            <li><a href="#exp-1" data-route="exp-1">Senior Backend Engineer<span class="case-sidebar__date">Nimbus Systems · 2023—Present</span></a></li>
+            <li class="is-current"><a href="#exp-2" data-route="exp-2">Backend Engineer<span class="case-sidebar__date">Arta Digital · 2021—2023</span></a></li>
+            <li><a href="#exp-3" data-route="exp-3">Software Engineer<span class="case-sidebar__date">Studio Delapan · 2019—2021</span></a></li>
+            <li><a href="#exp-4" data-route="exp-4">Freelance Developer<span class="case-sidebar__date">Independent · 2017—2019</span></a></li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE DETAIL: STUDIO DELAPAN -->
+  <section class="view" id="view-exp-3" data-view="exp-3">
+    <div class="wrap case">
+      <a href="#experience" data-route="experience" class="case__back">← Back to experience</a>
+      <p class="case__meta">2019 — 2021 · Studio Delapan</p>
+      <h1 class="case__title">Software Engineer</h1>
+      <p class="case__org">Built internal tooling and client-facing APIs at a small product studio.</p>
+
+      <div class="case-layout">
+        <article class="case-article">
+          <figure class="case-figure case-figure--hero">
+            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" alt="Small team reviewing work together">
+            <figcaption>The whole engineering team, on a good day</figcaption>
+          </figure>
+
+          <p class="case__lead">This was a three-person studio, so "backend engineer" meant whatever the week needed — client APIs on Monday, an internal admin panel on Wednesday, and helping debug a client's production incident on Friday. It's where I first learned to hold an entire system's context in my head at once, because there wasn't anyone else to ask.</p>
+
+          <figure class="case-figure">
+            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80" alt="Colorful code on a computer screen">
+            <figcaption>One of the eight client APIs, mid-build</figcaption>
+          </figure>
+
+          <ul class="case__list">
+            <li>Built and shipped APIs for eight different client projects across two years</li>
+            <li>Built the studio's internal time-tracking and invoicing tool, still in use today</li>
+            <li>First real exposure to production incidents, on-call, and owning a fix end to end</li>
+          </ul>
+
+          <figure class="case-figure">
+            <img src="https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?auto=format&fit=crop&w=1200&q=80" alt="Modern open workspace with desks and laptops">
+            <figcaption>Where the studio worked out of</figcaption>
+          </figure>
+
+          <div class="case__nav">
+            <a href="#exp-2" data-route="exp-2"><span class="dir">Previous</span>Backend Engineer, Arta Digital</a>
+            <a href="#exp-4" data-route="exp-4" class="to-next"><span class="dir">Next</span>Freelance Developer</a>
+          </div>
+        </article>
+
+        <aside class="case-sidebar">
+          <h4>Pengalaman lain</h4>
+          <ul>
+            <li><a href="#exp-1" data-route="exp-1">Senior Backend Engineer<span class="case-sidebar__date">Nimbus Systems · 2023—Present</span></a></li>
+            <li><a href="#exp-2" data-route="exp-2">Backend Engineer<span class="case-sidebar__date">Arta Digital · 2021—2023</span></a></li>
+            <li class="is-current"><a href="#exp-3" data-route="exp-3">Software Engineer<span class="case-sidebar__date">Studio Delapan · 2019—2021</span></a></li>
+            <li><a href="#exp-4" data-route="exp-4">Freelance Developer<span class="case-sidebar__date">Independent · 2017—2019</span></a></li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE DETAIL: FREELANCE -->
+  <section class="view" id="view-exp-4" data-view="exp-4">
+    <div class="wrap case">
+      <a href="#experience" data-route="experience" class="case__back">← Back to experience</a>
+      <p class="case__meta">2017 — 2019 · Independent, Bandung</p>
+      <h1 class="case__title">Freelance Developer</h1>
+      <p class="case__org">Websites and small internal tools for local businesses, alongside my degree.</p>
+
+      <div class="case-layout">
+        <article class="case-article">
+          <figure class="case-figure case-figure--hero">
+            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80" alt="Minimal desk setup with laptop and coffee">
+            <figcaption>The desk where most client sites got built</figcaption>
+          </figure>
+
+          <p class="case__lead">This is where most of my early debugging instincts came from — mostly because when something broke on a client's site at 11pm, there was no one else to fix it but me. Nothing here was glamorous, but it taught me to take ownership of things I built long after I'd shipped them.</p>
+
+          <figure class="case-figure">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80" alt="Close-up of hands typing on a laptop keyboard at night">
+            <figcaption>A fairly typical 11pm fire drill</figcaption>
+          </figure>
+
+          <ul class="case__list">
+            <li>Built and maintained websites for around a dozen local businesses in Bandung</li>
+            <li>Learned to scope, price, and manage client work while finishing a computer science degree</li>
+            <li>Wrote my first real automated tests, after one client site broke in a way tests would have caught</li>
+          </ul>
+
+          <figure class="case-figure">
+            <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80" alt="Close up of hands typing on a laptop keyboard">
+            <figcaption>Where the habit of shipping things started</figcaption>
+          </figure>
+
+          <div class="case__nav">
+            <a href="#exp-3" data-route="exp-3"><span class="dir">Previous</span>Software Engineer, Studio Delapan</a>
+            <span></span>
+          </div>
+        </article>
+
+        <aside class="case-sidebar">
+          <h4>Pengalaman lain</h4>
+          <ul>
+            <li><a href="#exp-1" data-route="exp-1">Senior Backend Engineer<span class="case-sidebar__date">Nimbus Systems · 2023—Present</span></a></li>
+            <li><a href="#exp-2" data-route="exp-2">Backend Engineer<span class="case-sidebar__date">Arta Digital · 2021—2023</span></a></li>
+            <li><a href="#exp-3" data-route="exp-3">Software Engineer<span class="case-sidebar__date">Studio Delapan · 2019—2021</span></a></li>
+            <li class="is-current"><a href="#exp-4" data-route="exp-4">Freelance Developer<span class="case-sidebar__date">Independent · 2017—2019</span></a></li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="view" id="view-contact" data-view="contact">
+    <div class="wrap contact">
+      <h2>Have a system worth building properly? Let's talk.</h2>
+      <div class="contact__email">
+        <a href="mailto:hello@kenjiaditya.dev" id="emailLink">hello@kenjiaditya.dev</a>
+        <button class="copy-btn" id="copyEmailBtn">Copy</button>
+      </div>
+      <div class="socials">
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://x.com" target="_blank" rel="noopener">X / Twitter</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <span>© <span id="year"></span> Kenji Aditya</span>
+  <span>Built with HTML, CSS &amp; JS</span>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var views = Array.prototype.slice.call(document.querySelectorAll(".view"));
+  var routeLinks = Array.prototype.slice.call(document.querySelectorAll("[data-route]"));
+  var navLinksTop = Array.prototype.slice.call(document.querySelectorAll(".nav__link"));
+  var validRoutes = views.map(function(v){ return v.getAttribute("data-view"); });
+
+  function setActiveNav(route){
+    navLinksTop.forEach(function(link){
+      if(link.getAttribute("data-route") === route){
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
+
+  function showRoute(route, opts){
+    opts = opts || {};
+    if(validRoutes.indexOf(route) === -1) route = "home";
+
+    views.forEach(function(v){
+      var isMatch = v.getAttribute("data-view") === route;
+      v.classList.toggle("active", isMatch);
+      if(isMatch){
+        v.classList.remove("page-enter");
+        // force reflow so the animation replays on repeat visits
+        void v.offsetWidth;
+        v.classList.add("page-enter");
+      }
+    });
+
+    setActiveNav(route);
+    document.title = (route === "home" ? "Kenji Aditya — Software Engineer" : "Kenji Aditya — " + route.charAt(0).toUpperCase() + route.slice(1));
+
+    if(!opts.skipScroll){ window.scrollTo({ top:0, behavior:"auto" }); }
+    closeMobileMenu();
+
+    if(!opts.skipFocus){
+      var heading = document.querySelector('[data-view="' + route + '"] h1, [data-view="' + route + '"] h2');
+      if(heading){ heading.setAttribute("tabindex","-1"); heading.focus({ preventScroll:true }); }
+    }
+  }
+
+  function routeFromHash(){
+    return (window.location.hash || "#home").replace("#","");
+  }
+
+  routeLinks.forEach(function(link){
+    link.addEventListener("click", function(e){
+      var route = link.getAttribute("data-route");
+      if(!route) return;
+      // let the browser update the hash naturally; hashchange listener does the rest
+    });
+  });
+
+  window.addEventListener("hashchange", function(){ showRoute(routeFromHash()); });
+  showRoute(routeFromHash(), { skipScroll:true, skipFocus:true });
+
+  /* ---------- Social / contact side panel ---------- */
+  var socialToggle = document.getElementById("socialToggle");
+  var socialPanel = document.getElementById("socialPanel");
+  var socialOverlay = document.getElementById("socialOverlay");
+
+  function setSocialOpen(open){
+    document.body.classList.toggle("social-open", open);
+    if(socialToggle) socialToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    if(socialPanel) socialPanel.setAttribute("aria-hidden", open ? "false" : "true");
+  }
+  if(socialToggle){
+    socialToggle.addEventListener("click", function(){
+      setSocialOpen(!document.body.classList.contains("social-open"));
+    });
+  }
+  if(socialOverlay){ socialOverlay.addEventListener("click", function(){ setSocialOpen(false); }); }
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") setSocialOpen(false);
+  });
+
+  /* ---------- Mobile menu ---------- */
+  var navToggle = document.getElementById("navToggle");
+  function closeMobileMenu(){
+    document.body.classList.remove("menu-open");
+    if(navToggle) navToggle.setAttribute("aria-expanded","false");
+  }
+  if(navToggle){
+    navToggle.addEventListener("click", function(){
+      var open = document.body.classList.toggle("menu-open");
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+
+  /* ---------- Work carousel ---------- */
+  var track = document.getElementById("workTrack");
+  var dotsWrap = document.getElementById("workDots");
+  var prevBtn = document.getElementById("workPrev");
+  var nextBtn = document.getElementById("workNext");
+
+  if(track && dotsWrap){
+    var cards = Array.prototype.slice.call(track.children);
+    cards.forEach(function(_, i){
+      var dot = document.createElement("button");
+      dot.setAttribute("aria-label", "Go to project " + (i + 1));
+      if(i === 0) dot.setAttribute("aria-current", "true");
+      dot.addEventListener("click", function(){
+        cards[i].scrollIntoView({ behavior:"smooth", inline:"start", block:"nearest" });
+      });
+      dotsWrap.appendChild(dot);
+    });
+    var dots = Array.prototype.slice.call(dotsWrap.children);
+
+    function scrollByCard(dir){
+      var card = cards[0];
+      var gap = 22;
+      var amount = (card.getBoundingClientRect().width + gap) * dir;
+      track.scrollBy({ left: amount, behavior:"smooth" });
+    }
+    if(prevBtn) prevBtn.addEventListener("click", function(){ scrollByCard(-1); });
+    if(nextBtn) nextBtn.addEventListener("click", function(){ scrollByCard(1); });
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            var idx = cards.indexOf(entry.target);
+            dots.forEach(function(d, i){
+              if(i === idx) d.setAttribute("aria-current","true");
+              else d.removeAttribute("aria-current");
+            });
+          }
+        });
+      }, { root: track, threshold: 0.6 });
+      cards.forEach(function(c){ io.observe(c); });
+    }
+  }
+
+  /* ---------- Parallax ---------- */
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var parallaxEls = Array.prototype.slice.call(document.querySelectorAll("[data-parallax]"));
+  var ticking = false;
+
+  function updateParallax(){
+    ticking = false;
+    if(reduceMotion) return;
+    var vh = window.innerHeight;
+    parallaxEls.forEach(function(el){
+      var rect = el.parentElement.getBoundingClientRect();
+      var center = rect.top + rect.height / 2;
+      var offset = (center - vh / 2) * 0.12;
+      el.style.transform = "translateY(" + offset.toFixed(1) + "px)";
+    });
+  }
+  function onScroll(){
+    if(!ticking){
+      window.requestAnimationFrame(updateParallax);
+      ticking = true;
+    }
+  }
+  if(parallaxEls.length){
+    window.addEventListener("scroll", onScroll, { passive:true });
+    window.addEventListener("resize", onScroll);
+    updateParallax();
+  }
+
+  /* ---------- Copy email ---------- */
+  var copyBtn = document.getElementById("copyEmailBtn");
+  var emailLink = document.getElementById("emailLink");
+  if(copyBtn && emailLink){
+    copyBtn.addEventListener("click", function(){
+      var email = emailLink.textContent.trim();
+      var done = function(){
+        var original = copyBtn.textContent;
+        copyBtn.textContent = "Copied";
+        setTimeout(function(){ copyBtn.textContent = original; }, 1600);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(email).then(done).catch(function(){
+          window.location.href = "mailto:" + email;
+        });
+      } else {
+        window.location.href = "mailto:" + email;
+      }
+    });
+  }
+
+  /* ---------- Experience highlights carousel ---------- */
+  var expTrack = document.getElementById("expTrack");
+  var expDotsWrap = document.getElementById("expDots");
+  var expItems = document.getElementById("expItems");
+
+  if(expTrack && expDotsWrap){
+    var expSlides = Array.prototype.slice.call(expTrack.children);
+    var expTimer = null;
+    var expIndex = 0;
+
+    expSlides.forEach(function(_, i){
+      var dot = document.createElement("button");
+      dot.setAttribute("aria-label", "Go to highlight " + (i + 1));
+      if(i === 0) dot.classList.add("is-active");
+      dot.addEventListener("click", function(){ goToSlide(i); resetAutoplay(); });
+      expDotsWrap.appendChild(dot);
+    });
+    var expDots = Array.prototype.slice.call(expDotsWrap.children);
+
+    function goToSlide(i){
+      expIndex = i;
+      expSlides.forEach(function(s, idx){ s.classList.toggle("is-active", idx === i); });
+      expDots.forEach(function(d, idx){ d.classList.toggle("is-active", idx === i); });
+    }
+
+    if(expItems){
+      Array.prototype.slice.call(expItems.children).forEach(function(li, i){
+        li.querySelector("a").addEventListener("mouseenter", function(){ goToSlide(i); resetAutoplay(); });
+      });
+    }
+
+    function startAutoplay(){
+      if(reduceMotion) return;
+      expTimer = setInterval(function(){ goToSlide((expIndex + 1) % expSlides.length); }, 4500);
+    }
+    function stopAutoplay(){ if(expTimer) clearInterval(expTimer); }
+    function resetAutoplay(){ stopAutoplay(); startAutoplay(); }
+
+    expTrack.addEventListener("mouseenter", stopAutoplay);
+    expTrack.addEventListener("mouseleave", startAutoplay);
+    expTrack.addEventListener("focusin", stopAutoplay);
+    expTrack.addEventListener("focusout", startAutoplay);
+    startAutoplay();
+  }
+
+  /* ---------- Footer year ---------- */
+  var yearEl = document.getElementById("year");
+  if(yearEl) yearEl.textContent = new Date().getFullYear();
+
+})();
+</script>
+</body>
+</html>
