@@ -176,7 +176,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
               />
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,image/png,image/jpeg,image/webp"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;

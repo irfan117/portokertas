@@ -3,7 +3,10 @@ import { getApiBase } from './apiBase';
 const API_BASE = getApiBase();
 
 export async function uploadImage(file: File): Promise<string> {
-  if (!file.type.startsWith('image/')) throw new Error('File harus berupa gambar.');
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+  if (!file.type.startsWith('image/') && !allowedTypes.includes(file.type)) {
+    throw new Error('File harus berupa gambar (PNG, JPG, WEBP, GIF).');
+  }
   const presignResponse = await fetch(`${API_BASE}/uploads/presign`, {
     method: 'POST',
     credentials: 'include',

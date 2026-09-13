@@ -288,7 +288,8 @@ const PortfolioContext = createContext<PortfolioContextType | undefined>(undefin
 
 function loadInitialData(): PortfolioData {
   try {
-    if (typeof window !== 'undefined' && localStorage.getItem('kenji_portfolio_cms_data_v1')) {
+    if (typeof window === 'undefined') return INITIAL_PORTFOLIO_DATA;
+    if (localStorage.getItem('kenji_portfolio_cms_data_v1')) {
       localStorage.removeItem('kenji_portfolio_cms_data_v1');
     }
     const saved = localStorage.getItem(STORAGE_KEY);

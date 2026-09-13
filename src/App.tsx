@@ -31,6 +31,7 @@ const VALID_ROUTES: RouteId[] = [
 ];
 
 function getValidRouteFromHash(): RouteId {
+  if (typeof window === 'undefined') return 'home';
   const hash = (window.location.hash || '').replace('#', '').trim();
   if (VALID_ROUTES.includes(hash)) return hash;
   if (hash.startsWith('note-') || hash.startsWith('lab-note-')) {

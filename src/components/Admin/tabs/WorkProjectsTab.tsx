@@ -141,7 +141,7 @@ export const WorkProjectsTab: React.FC<WorkProjectsTabProps> = ({ showToast }) =
               />
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,image/png,image/jpeg,image/webp"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
@@ -348,7 +348,7 @@ export const WorkProjectsTab: React.FC<WorkProjectsTabProps> = ({ showToast }) =
                       />
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/*,image/png,image/jpeg,image/webp"
                         multiple
                         onChange={async (e) => {
                           const files = Array.from(e.target.files || []);
