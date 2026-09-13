@@ -24,7 +24,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onAuthenticated }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const result = await response.json();
+      const text = await response.text();
+      let result: { error?: string } = {};
+      try {
+        result = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(`Server error (${response.status}): ${text.slice(0, 100) || response.statusText}`);
+      }
       if (!response.ok) throw new Error(result.error || 'Login gagal');
       onAuthenticated();
     } catch (err) {

@@ -78,7 +78,8 @@ app.use(apiRouter);
 app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('API error:', error);
   if (res.headersSent) return;
-  res.status(500).json({ error: 'Terjadi kesalahan pada server.' });
+  const message = error instanceof Error ? error.message : 'Terjadi kesalahan pada server.';
+  res.status(500).json({ error: message });
 });
 
 let server: ReturnType<typeof app.listen> | undefined;
