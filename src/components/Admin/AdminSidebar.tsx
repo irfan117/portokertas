@@ -91,7 +91,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             onClick={() => handleItemClick('git')}
           >
             <GitBranch size={16} />
-            <span>Git Activity Radar</span>
+            <span>GitHub Accounts</span>
             <span className="admin-nav-badge admin-nav-badge--new">NEW</span>
           </button>
         </div>

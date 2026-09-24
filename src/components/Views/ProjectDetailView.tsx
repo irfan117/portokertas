@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowLeft, ExternalLink, Github } from 'lucide-react';
 import { RouteId } from '../../types';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { getProjectGallery } from '../../lib/projectImages';
 
 interface ProjectDetailViewProps {
   projectRouteId: RouteId;
@@ -16,30 +17,6 @@ function getProjectIdFromRoute(routeId: RouteId) {
     return rawId;
   }
 }
-
-// Deduplicate gambar: img utama + images dari DB, tanpa duplikasi
-function buildGallery(img: string, images?: string[]): string[] {
-  const all: string[] = [];
-
-  // Tambahkan images dari DB terlebih dahulu (prioritas urutan admin)
-  if (Array.isArray(images) && images.length > 0) {
-    for (const url of images) {
-      const trimmed = url.trim();
-      if (trimmed && !all.includes(trimmed)) all.push(trimmed);
-    }
-  }
-
-  // Tambahkan img utama hanya jika belum ada di list images
-  const mainImg = img?.trim();
-  if (mainImg && !all.includes(mainImg)) {
-    all.unshift(mainImg); // tetap jadikan yang pertama jika belum ada
-  }
-
-  return all;
-}
-
-const DEFAULT_PLACEHOLDER =
-  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80';
 
 export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectRouteId, onNavigate }) => {
   const { data } = usePortfolio();
@@ -58,18 +35,8 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ projectRou
     );
   }
 
-  // Gambar: gunakan images dari DB jika ada, jika tidak gunakan img cover
-  // Jangan tampilkan placeholder default jika ada gambar asli
-  const hasRealImages =
-    (Array.isArray(project.images) && project.images.some((u) => u?.trim())) ||
-    (project.img && project.img !== DEFAULT_PLACEHOLDER && project.img.trim());
-
-  const gallery = hasRealImages
-    ? buildGallery(project.img, project.images).filter(
-        (u) => u !== DEFAULT_PLACEHOLDER || !project.images?.length,
-      )
-    : []; // Kalau semua hanya placeholder & tidak ada upload, kosongkan gallery
-
+  // Ambil galeri gambar asli dari database tanpa duplikasi dan tanpa placeholder dummy
+  const gallery = getProjectGallery(project);
   const heroImage = gallery[0];
   const extraImages = gallery.slice(1);
 

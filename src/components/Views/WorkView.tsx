@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { RouteId, WorkProject } from '../../types';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { getProjectDisplayImage } from '../../lib/projectImages';
 
 interface WorkViewProps {
   onNavigate?: (route: RouteId) => void;
@@ -16,9 +17,10 @@ function getProjectHref(project: WorkProject) {
 }
 
 function ProjectImage({ project, compact = false }: { project: WorkProject; compact?: boolean }) {
+  const displayImage = getProjectDisplayImage(project);
   return (
     <div className={compact ? 'proj-preview-inner' : 'proj-card-art proj-card-art-svg'}>
-      <img className="artwork" src={project.img} alt={project.alt || project.title} loading="lazy" />
+      <img className="artwork" src={displayImage} alt={project.alt || project.title} loading="lazy" />
       <div className="proj-preview-overlay">
         <div className="mono-sm">{project.tags.slice(0, 4).join(' · ') || 'Project documentation'}</div>
       </div>

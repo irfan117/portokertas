@@ -12,7 +12,7 @@ interface AdminTopbarProps {
 const TAB_TITLES: Record<AdminTab, string> = {
   overview: 'Dashboard Overview',
   profile: 'Profile & Hero Headline',
-  git: 'Git Activity Telemetry Radar',
+  git: 'GitHub Accounts',
   work: 'Work Projects Management',
   'lab-notes': 'Lab Notes & Whitepapers',
   talks: 'Talks & Writing Marquee',

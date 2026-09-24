@@ -26,8 +26,8 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
       : DEFAULT_GIT_ACCOUNTS;
   }, [data.gitAccounts]);
 
-  const totalCommits = useMemo(() => {
-    return gitAccounts.find((a) => a.id === 'all')?.totalContributions || 5012;
+  const connectedGitAccounts = useMemo(() => {
+    return gitAccounts.filter((account) => account.id !== 'all').length;
   }, [gitAccounts]);
 
   return (
@@ -68,8 +68,8 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
             <span className="mono">GIT TELEMETRY</span>
             <GitBranch size={16} />
           </div>
-          <div className="admin-kpi-card__num">{totalCommits.toLocaleString()}</div>
-          <div className="admin-kpi-card__label">Commits Across Accounts</div>
+          <div className="admin-kpi-card__num">{connectedGitAccounts.toLocaleString()}</div>
+          <div className="admin-kpi-card__label">Connected GitHub Accounts</div>
         </div>
 
         <div className="admin-kpi-card" onClick={() => onNavigateTab('talks')} style={{ cursor: 'pointer' }}>
@@ -98,9 +98,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ onNavigateTab }) => {
               <GitBranch size={18} />
             </div>
             <div>
-              <div className="admin-qa-title">Git Telemetry Radar</div>
+              <div className="admin-qa-title">GitHub Accounts</div>
               <div className="admin-qa-desc">
-                Configure multi-account commit activity, streaks, and repository telemetry.
+                Add GitHub profile links and let the public section fetch live statistics.
               </div>
             </div>
           </div>

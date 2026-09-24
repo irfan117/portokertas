@@ -22,8 +22,8 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
     caption: 'Architecture breakdown and telemetry graphs',
     summary: '',
     contentRaw: '',
-    codeLang: 'go',
-    codeFilename: 'internal/cluster/node.go',
+    codeLang: '',
+    codeFilename: '',
     codeBody: '',
   });
 
@@ -73,7 +73,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
       content: paragraphs,
       codeSnippet: newLabNote.codeBody.trim()
         ? {
-            language: newLabNote.codeLang,
+            language: newLabNote.codeLang || undefined,
             filename: newLabNote.codeFilename || undefined,
             code: newLabNote.codeBody.trim(),
           }
@@ -91,8 +91,8 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
       caption: 'Architecture breakdown and telemetry graphs',
       summary: '',
       contentRaw: '',
-      codeLang: 'go',
-      codeFilename: 'internal/cluster/node.go',
+      codeLang: '',
+      codeFilename: '',
       codeBody: '',
     });
     showToast(`Lab note "${noteToAdd.title}" published!`);
@@ -229,6 +229,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
                 value={newLabNote.codeLang}
                 onChange={(e) => setNewLabNote({ ...newLabNote, codeLang: e.target.value })}
               >
+                <option value="">-- Pilih bahasa (opsional) --</option>
                 <option value="go">Go</option>
                 <option value="rust">Rust</option>
                 <option value="sql">SQL / Postgres</option>

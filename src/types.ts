@@ -158,6 +158,7 @@ export interface GitAccount {
   handle: string;
   role: string;
   url: string;
+  avatarUrl?: string;
   avatarText: string;
   badge: string;
   totalContributions: number;
@@ -168,6 +169,10 @@ export interface GitAccount {
   seed: number;
   languages: GitLanguage[];
   recentCommits: GitCommitItem[];
+  contributionMatrix?: Array<Array<{ level: number; count: number; dateStr: string }>>;
+  followers?: number;
+  isLive?: boolean;
+  source?: string;
 }
 
 export interface PortfolioData {

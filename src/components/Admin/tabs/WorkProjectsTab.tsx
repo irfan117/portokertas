@@ -3,13 +3,13 @@ import { usePortfolio } from '../../../context/PortfolioContext';
 import { WorkProject } from '../../../types';
 import { Plus, Edit3, Trash2, X, Upload } from 'lucide-react';
 import { uploadImage } from '../../../lib/uploadImage';
+import { getProjectDisplayImage, isDefaultPlaceholder, DEFAULT_PROJECT_PLACEHOLDER } from '../../../lib/projectImages';
 
 interface WorkProjectsTabProps {
   showToast: (message: string) => void;
 }
 
-const DEFAULT_PLACEHOLDER =
-  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80';
+const DEFAULT_PLACEHOLDER = DEFAULT_PROJECT_PLACEHOLDER;
 
 /* ── Reusable image thumbnail strip ── */
 function ImageStrip({
@@ -251,12 +251,12 @@ export const WorkProjectsTab: React.FC<WorkProjectsTabProps> = ({ showToast }) =
           {/* Cover image */}
           <ImageStrip
             label="Cover Image"
-            images={newProject.img && newProject.img !== DEFAULT_PLACEHOLDER ? [newProject.img] : []}
+            images={newProject.img && !isDefaultPlaceholder(newProject.img) ? [newProject.img] : []}
             onRemove={() => setNewProject({ ...newProject, img: '' })}
             onUpload={(files) =>
               doUpload(files.slice(0, 1), ([url]) => setNewProject({ ...newProject, img: url }), 'new')
             }
-            urlValue={newProject.img || ''}
+            urlValue={newProject.img && !isDefaultPlaceholder(newProject.img) ? newProject.img : ''}
             onUrlChange={(url) => setNewProject({ ...newProject, img: url })}
           />
 
@@ -274,7 +274,11 @@ export const WorkProjectsTab: React.FC<WorkProjectsTabProps> = ({ showToast }) =
             onUpload={(files) =>
               doUpload(
                 files,
-                (urls) => setNewProject({ ...newProject, images: [...(newProject.images || []), ...urls] }),
+                (urls) => {
+                  const nextImages = [...(newProject.images || []), ...urls];
+                  const nextImg = (!newProject.img || isDefaultPlaceholder(newProject.img)) ? urls[0] : newProject.img;
+                  setNewProject({ ...newProject, images: nextImages, img: nextImg });
+                },
                 'new',
               )
             }
@@ -357,7 +361,7 @@ export const WorkProjectsTab: React.FC<WorkProjectsTabProps> = ({ showToast }) =
 
               {/* Thumbnail cover */}
               <img
-                src={project.img || DEFAULT_PLACEHOLDER}
+                src={getProjectDisplayImage(project)}
                 alt={project.alt || project.title}
                 style={{
                   width: '90px', height: '65px', objectFit: 'cover',
@@ -390,8 +394,11 @@ export const WorkProjectsTab: React.FC<WorkProjectsTabProps> = ({ showToast }) =
                     {/* Cover image edit with remove */}
                     <ImageStrip
                       label="Cover Image"
-                      images={project.img && project.img !== DEFAULT_PLACEHOLDER ? [project.img] : []}
-                      onRemove={() => editWorkProject(project.id, { img: DEFAULT_PLACEHOLDER })}
+                      images={project.img && !isDefaultPlaceholder(project.img) ? [project.img] : []}
+                      onRemove={() => {
+                        const fallback = project.images && project.images.length > 0 ? project.images[0] : '';
+                        editWorkProject(project.id, { img: fallback });
+                      }}
                       onUpload={(files) =>
                         doUpload(
                           files.slice(0, 1),
@@ -399,8 +406,8 @@ export const WorkProjectsTab: React.FC<WorkProjectsTabProps> = ({ showToast }) =
                           project.id,
                         )
                       }
-                      urlValue={project.img !== DEFAULT_PLACEHOLDER ? project.img : ''}
-                      onUrlChange={(url) => editWorkProject(project.id, { img: url || DEFAULT_PLACEHOLDER })}
+                      urlValue={project.img && !isDefaultPlaceholder(project.img) ? project.img : ''}
+                      onUrlChange={(url) => editWorkProject(project.id, { img: url })}
                     />
 
                     {/* Gallery images edit with per-image remove */}
@@ -416,8 +423,11 @@ export const WorkProjectsTab: React.FC<WorkProjectsTabProps> = ({ showToast }) =
                       onUpload={(files) =>
                         doUpload(
                           files,
-                          (urls) =>
-                            editWorkProject(project.id, { images: [...(project.images || []), ...urls] }),
+                          (urls) => {
+                            const nextImages = [...(project.images || []), ...urls];
+                            const nextImg = (!project.img || isDefaultPlaceholder(project.img)) ? urls[0] : project.img;
+                            editWorkProject(project.id, { images: nextImages, img: nextImg });
+                          },
                           project.id,
                         )
                       }
