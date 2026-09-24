@@ -4994,6 +4994,15 @@ body.social-open .social-panel__contact{
   letter-spacing:0.04em;
   flex-shrink:0;
   border:1px solid var(--ink);
+  overflow:hidden;
+}
+
+.git-live-note{
+  margin:-1rem 0 1.4rem;
+  color:var(--muted);
+  display:inline-flex;
+  align-items:center;
+  gap:0.45rem;
 }
 
 .git-info-text{
@@ -5797,6 +5806,12 @@ body.social-open .social-panel__contact{
 .ln-skel-block{
   background:rgba(22,23,26,0.05);
   border-radius:0.75rem;
+}
+
+/* GitHub heatmap skeleton pulse */
+@keyframes gitSkeletonPulse{
+  0%,100%{ opacity:0.4; }
+  50%{ opacity:0.15; }
 }
 
 
