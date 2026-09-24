@@ -49,28 +49,32 @@ export const AboutView: React.FC = () => {
           </div>
         </div>
 
-        <div className="about-portrait">
-          <img
-            src={profile.portraitImg}
-            alt={`${profile.name} working thoughtfully`}
-          />
-        </div>
+        {profile.portraitImg ? (
+          <div className="about-portrait">
+            <img
+              src={profile.portraitImg}
+              alt={`${profile.name} working thoughtfully`}
+            />
+          </div>
+        ) : null}
       </div>
 
       {/* QUOTE SECTION */}
-      <div
-        className="quote-bg"
-        style={{
-          backgroundImage: `url('${profile.aboutQuote.bgImage}')`,
-        }}
-      >
-        <div className="quote-overlay">
-          <blockquote>
-            "{profile.aboutQuote.text}"
-            <cite>{profile.aboutQuote.cite}</cite>
-          </blockquote>
+      {profile.aboutQuote?.text ? (
+        <div
+          className="quote-bg"
+          style={{
+            backgroundImage: profile.aboutQuote?.bgImage ? `url('${profile.aboutQuote.bgImage}')` : undefined,
+          }}
+        >
+          <div className="quote-overlay">
+            <blockquote>
+              "{profile.aboutQuote.text}"
+              {profile.aboutQuote.cite && <cite>{profile.aboutQuote.cite}</cite>}
+            </blockquote>
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {/* SPLIT PARALLAX */}
       <div className="split-parallax">

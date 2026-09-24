@@ -71,3 +71,4 @@ export function getProjectDisplayImage(project: WorkProject): string {
   }
   return project.img || DEFAULT_PROJECT_PLACEHOLDER;
 }
+

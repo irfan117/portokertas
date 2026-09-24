@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { usePortfolio } from '../../../context/PortfolioContext';
 import { LabNote, RouteId } from '../../../types';
-import { Plus, Edit3, Trash2, Eye, BookOpen } from 'lucide-react';
+import { Plus, Edit3, Trash2, Eye, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { uploadImage } from '../../../lib/uploadImage';
 
 interface LabNotesTabProps {
@@ -18,7 +18,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
     date: 'September 2024',
     readTime: '6 min read',
     tagsInput: 'Go, Systems, Latency',
-    img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+    img: '',
     caption: 'Architecture breakdown and telemetry graphs',
     summary: '',
     contentRaw: '',
@@ -28,6 +28,8 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
   });
 
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [isUploadingNew, setIsUploadingNew] = useState(false);
+  const [isUploadingEdit, setIsUploadingEdit] = useState<string | null>(null);
 
   const handleAddLabNote = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,21 +62,21 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
 
     const noteToAdd: LabNote = {
       id: noteId,
-      slug: noteId,
+      slug,
       title: newLabNote.title.trim(),
       category: newLabNote.category,
-      date: newLabNote.date || 'Recent',
-      readTime: newLabNote.readTime || '5 min read',
-      tags: tagsArray.length > 0 ? tagsArray : ['Engineering'],
-      img: newLabNote.img,
-      alt: newLabNote.caption || newLabNote.title,
-      caption: newLabNote.caption || newLabNote.title,
+      date: newLabNote.date.trim() || 'August 2024',
+      readTime: newLabNote.readTime.trim() || '5 min read',
+      tags: tagsArray.length > 0 ? tagsArray : ['Systems', 'Architecture'],
+      caption: newLabNote.caption.trim() || newLabNote.title.trim(),
+      img: newLabNote.img.trim(),
+      alt: newLabNote.title.trim(),
       summary: newLabNote.summary.trim(),
       content: paragraphs,
       codeSnippet: newLabNote.codeBody.trim()
         ? {
-            language: newLabNote.codeLang || undefined,
-            filename: newLabNote.codeFilename || undefined,
+            language: newLabNote.codeLang || 'go',
+            filename: newLabNote.codeFilename.trim() || 'main.go',
             code: newLabNote.codeBody.trim(),
           }
         : undefined,
@@ -87,7 +89,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
       date: 'September 2024',
       readTime: '6 min read',
       tagsInput: 'Go, Systems, Latency',
-      img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+      img: '',
       caption: 'Architecture breakdown and telemetry graphs',
       summary: '',
       contentRaw: '',
@@ -98,9 +100,35 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
     showToast(`Lab note "${noteToAdd.title}" published!`);
   };
 
+  const handleUploadImageNew = async (file: File) => {
+    setIsUploadingNew(true);
+    try {
+      const url = await uploadImage(file);
+      setNewLabNote((prev) => ({ ...prev, img: url }));
+      showToast('Gambar lab note berhasil diunggah ke Cloudinary');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Upload gambar gagal');
+    } finally {
+      setIsUploadingNew(false);
+    }
+  };
+
+  const handleUploadImageEdit = async (noteId: string, file: File) => {
+    setIsUploadingEdit(noteId);
+    try {
+      const url = await uploadImage(file);
+      editLabNote(noteId, { img: url });
+      showToast('Gambar lab note berhasil diperbarui');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Upload gambar gagal');
+    } finally {
+      setIsUploadingEdit(null);
+    }
+  };
+
   return (
     <div className="admin-section">
-      {/* 1. Add New Lab Note Form */}
+      {/* ── 1. Add New Lab Note Form ── */}
       <div className="admin-card">
         <h2 className="admin-card-title">+ Publish New Lab Note &amp; Whitepaper</h2>
         <p className="admin-card-desc">
@@ -165,30 +193,90 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
             </div>
           </div>
 
+          {/* Cover Image & Caption */}
           <div className="admin-grid-2">
             <div className="admin-field">
-              <label>Cover / Whiteboard Photo URL *</label>
+              <label>Cover / Diagram Photo URL</label>
               <input
                 type="text"
-                placeholder="https://images.unsplash.com/..."
+                placeholder="https://... atau upload file di bawah"
                 value={newLabNote.img}
                 onChange={(e) => setNewLabNote({ ...newLabNote, img: e.target.value })}
               />
-              <input
-                type="file"
-                accept="image/*,image/png,image/jpeg,image/webp"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  try {
-                    setNewLabNote({ ...newLabNote, img: await uploadImage(file) });
-                    showToast('Gambar berhasil diunggah ke Cloudinary');
-                  } catch (error) {
-                    showToast(error instanceof Error ? error.message : 'Upload gambar gagal');
-                  }
-                }}
-              />
+
+              {newLabNote.img && (
+                <div style={{ position: 'relative', display: 'inline-block', marginTop: '0.6rem' }}>
+                  <img
+                    src={newLabNote.img}
+                    alt="Cover Preview"
+                    style={{
+                      width: '120px',
+                      height: '80px',
+                      objectFit: 'cover',
+                      borderRadius: '4px',
+                      border: '1px solid var(--line)',
+                      display: 'block',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    title="Hapus gambar"
+                    onClick={() => setNewLabNote({ ...newLabNote, img: '' })}
+                    style={{
+                      position: 'absolute',
+                      top: '-6px',
+                      right: '-6px',
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      background: '#e53e3e',
+                      color: '#fff',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: 0,
+                      zIndex: 2,
+                    }}
+                  >
+                    <X size={11} />
+                  </button>
+                </div>
+              )}
+
+              <div style={{ marginTop: '0.5rem' }}>
+                <label
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.35rem 0.8rem',
+                    background: 'var(--paper-dim)',
+                    border: '1px solid var(--line)',
+                    borderRadius: '3px',
+                    cursor: isUploadingNew ? 'not-allowed' : 'pointer',
+                    fontSize: '0.82rem',
+                    color: 'var(--ink)',
+                  }}
+                >
+                  <Upload size={13} />
+                  {isUploadingNew ? 'Mengunggah...' : 'Upload Gambar'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={isUploadingNew}
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleUploadImageNew(file);
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
+              </div>
             </div>
+
             <div className="admin-field">
               <label>Photo Caption / Figure Context</label>
               <input
@@ -216,7 +304,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
             </label>
             <textarea
               rows={5}
-              placeholder="Paragraph 1: The incident began with tail latency spikes during flash auctions...&#10;&#10;Paragraph 2: We isolated the problem using pprof CPU and memory profiles..."
+              placeholder={'Paragraph 1: The incident began with tail latency spikes during flash auctions...\n\nParagraph 2: We isolated the problem using pprof CPU and memory profiles...'}
               value={newLabNote.contentRaw}
               onChange={(e) => setNewLabNote({ ...newLabNote, contentRaw: e.target.value })}
             />
@@ -235,28 +323,25 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
                 <option value="sql">SQL / Postgres</option>
                 <option value="typescript">TypeScript</option>
                 <option value="bash">Bash / Shell</option>
-                <option value="yaml">YAML / Kube</option>
+                <option value="python">Python</option>
               </select>
             </div>
             <div className="admin-field">
-              <label>Code Snippet Filename (Optional)</label>
+              <label>Code Snippet Filename</label>
               <input
                 type="text"
-                placeholder="e.g. internal/pool/buffer.go"
+                placeholder="e.g. internal/cluster/node.go"
                 value={newLabNote.codeFilename}
-                onChange={(e) =>
-                  setNewLabNote({ ...newLabNote, codeFilename: e.target.value })
-                }
+                onChange={(e) => setNewLabNote({ ...newLabNote, codeFilename: e.target.value })}
               />
             </div>
           </div>
 
           <div className="admin-field">
-            <label>Code Snippet Content (Optional)</label>
+            <label>Code Snippet Body</label>
             <textarea
               rows={4}
-              placeholder="var bufPool = sync.Pool{ New: func() any { return new(bytes.Buffer) } }"
-              style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}
+              placeholder={'// Paste your illustrative code snippet here...\nfunc SyncClusterState(ctx context.Context) error {\n    // ...\n}'}
               value={newLabNote.codeBody}
               onChange={(e) => setNewLabNote({ ...newLabNote, codeBody: e.target.value })}
             />
@@ -273,7 +358,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
         </form>
       </div>
 
-      {/* 2. Published Lab Notes List */}
+      {/* ── 2. Published Lab Notes List ── */}
       <div className="admin-card">
         <h2 className="admin-card-title">
           Published Lab Notes ({data.labNotes.length})
@@ -281,17 +366,38 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
         <div className="admin-items-list">
           {data.labNotes.map((note, idx) => (
             <div key={note.id || idx} className="admin-item-row">
-              <img
-                src={note.img}
-                alt={note.alt || note.title}
-                style={{
-                  width: '80px',
-                  height: '60px',
-                  objectFit: 'cover',
-                  borderRadius: '2px',
-                  border: '1px solid var(--line)',
-                }}
-              />
+              {note.img ? (
+                <img
+                  src={note.img}
+                  alt={note.alt || note.title}
+                  style={{
+                    width: '80px',
+                    height: '60px',
+                    objectFit: 'cover',
+                    borderRadius: '2px',
+                    border: '1px solid var(--line)',
+                    flexShrink: 0,
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: '80px',
+                    height: '60px',
+                    background: 'var(--paper-dim)',
+                    borderRadius: '2px',
+                    border: '1px solid var(--line)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--muted)',
+                    flexShrink: 0,
+                  }}
+                >
+                  <ImageIcon size={20} style={{ opacity: 0.4 }} />
+                </div>
+              )}
+
               <div className="admin-item-content">
                 {editingNoteId === note.id ? (
                   <div className="admin-edit-inline">
@@ -303,14 +409,127 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
                         onChange={(e) => editLabNote(note.id, { title: e.target.value })}
                       />
                     </div>
+
+                    <div className="admin-grid-2">
+                      <div className="admin-field">
+                        <label>Category</label>
+                        <input
+                          type="text"
+                          value={note.category}
+                          onChange={(e) => editLabNote(note.id, { category: e.target.value })}
+                        />
+                      </div>
+                      <div className="admin-field">
+                        <label>Date &amp; Read Time</label>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <input
+                            type="text"
+                            placeholder="Date (e.g. Sept 2024)"
+                            value={note.date || ''}
+                            onChange={(e) => editLabNote(note.id, { date: e.target.value })}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Read Time (e.g. 5 min read)"
+                            value={note.readTime || ''}
+                            onChange={(e) => editLabNote(note.id, { readTime: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Image Edit & Upload & Delete */}
                     <div className="admin-field">
-                      <label>Category</label>
+                      <label>Cover / Diagram Image</label>
                       <input
                         type="text"
-                        value={note.category}
-                        onChange={(e) => editLabNote(note.id, { category: e.target.value })}
+                        placeholder="https://... atau upload di bawah"
+                        value={note.img || ''}
+                        onChange={(e) => editLabNote(note.id, { img: e.target.value })}
+                      />
+
+                      {note.img && (
+                        <div style={{ position: 'relative', display: 'inline-block', marginTop: '0.6rem' }}>
+                          <img
+                            src={note.img}
+                            alt="Cover Preview"
+                            style={{
+                              width: '120px',
+                              height: '80px',
+                              objectFit: 'cover',
+                              borderRadius: '4px',
+                              border: '1px solid var(--line)',
+                              display: 'block',
+                            }}
+                          />
+                          <button
+                            type="button"
+                            title="Hapus gambar note"
+                            onClick={() => editLabNote(note.id, { img: '' })}
+                            style={{
+                              position: 'absolute',
+                              top: '-6px',
+                              right: '-6px',
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '50%',
+                              background: '#e53e3e',
+                              color: '#fff',
+                              border: 'none',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              padding: 0,
+                              zIndex: 2,
+                            }}
+                          >
+                            <X size={11} />
+                          </button>
+                        </div>
+                      )}
+
+                      <div style={{ marginTop: '0.5rem' }}>
+                        <label
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            padding: '0.35rem 0.8rem',
+                            background: 'var(--paper-dim)',
+                            border: '1px solid var(--line)',
+                            borderRadius: '3px',
+                            cursor: isUploadingEdit === note.id ? 'not-allowed' : 'pointer',
+                            fontSize: '0.82rem',
+                            color: 'var(--ink)',
+                          }}
+                        >
+                          <Upload size={13} />
+                          {isUploadingEdit === note.id ? 'Mengunggah...' : 'Upload Gambar Baru'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            disabled={isUploadingEdit === note.id}
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleUploadImageEdit(note.id, file);
+                              e.target.value = '';
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="admin-field">
+                      <label>Photo Caption / Figure Context</label>
+                      <input
+                        type="text"
+                        value={note.caption || ''}
+                        onChange={(e) => editLabNote(note.id, { caption: e.target.value })}
                       />
                     </div>
+
                     <div className="admin-field">
                       <label>Summary</label>
                       <textarea
@@ -319,6 +538,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
                         onChange={(e) => editLabNote(note.id, { summary: e.target.value })}
                       />
                     </div>
+
                     <button
                       type="button"
                       className="btn btn--primary"
@@ -370,7 +590,7 @@ export const LabNotesTab: React.FC<LabNotesTabProps> = ({ showToast, onNavigateS
               <div className="admin-item-actions">
                 <button
                   className="admin-action-btn"
-                  onClick={() => onNavigateSite(`note-${note.id}` as RouteId)}
+                  onClick={() => onNavigateSite(`lab-note-${note.slug || note.id}` as RouteId)}
                   title="Open live article page"
                 >
                   <Eye size={12} />
