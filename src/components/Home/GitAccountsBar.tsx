@@ -71,11 +71,15 @@ export const GitAccountsBar: React.FC = () => {
   }, [data.gitAccounts]);
 
   // Stub list shown immediately (while live data loads)
+  // PENTING: gunakan account.id asli dari DB (bukan username dari URL) agar key tidak duplikat
   const stubs = useMemo<GitAccount[]>(
     () =>
       sourceAccounts.map((account, index) => {
         const username = usernameFromAccount(account);
-        return makeStub(username, index);
+        return {
+          ...makeStub(username, index),
+          id: account.id, // preserve original DB id to avoid duplicate React keys
+        };
       }),
     [sourceAccounts],
   );
