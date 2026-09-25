@@ -204,7 +204,7 @@ export const ExperienceGallerySection: React.FC<ExperienceGallerySectionProps> =
         data-settings='{"gallery_layout":"masonry","columns":2,"gap":{"unit":"px","size":8,"sizes":[]},"columns_mobile":2,"columns_tablet":3,"gap_tablet":{"unit":"px","size":10,"sizes":[]},"gap_mobile":{"unit":"px","size":10,"sizes":[]},"link_to":"file","overlay_background":"yes","content_hover_animation":"fade-in"}'
         data-widget_type="gallery.default"
       >
-        <div className="wrap" style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+        <div className="wrap">
           {/* ==========================================================
              VERTICAL CONTINUOUS AUTO-LOOPING MASONRY STREAMS
              - Column 1: Moves UP (always visible)

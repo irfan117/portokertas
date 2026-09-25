@@ -12,7 +12,7 @@ interface HomeLabNotesSectionProps {
 /* ── Skeleton shown while fetching ── */
 export const HomeLabNotesSkeleton: React.FC = () => (
   <section id="lab-notes-section" className="ln-section">
-    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+    <div style={{ maxWidth: 'var(--maxw)', margin: '0 auto', width: '100%' }}>
       {/* header skeleton */}
       <div className="ln-header ln-skeleton">
         <div className="ln-skel-block" style={{ height: '6rem', width: '20rem', marginBottom: '1rem' }} />
@@ -62,7 +62,7 @@ export const HomeLabNotesSection: React.FC<HomeLabNotesSectionProps> = ({ onNavi
   return (
     <section id="lab-notes-section" className="ln-section">
       <div id="lab-notes" style={{ position: 'absolute', top: '-80px' }} />
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+      <div style={{ maxWidth: 'var(--maxw)', margin: '0 auto', width: '100%' }}>
 
         {/* ── Header ── */}
         <div className="ln-header">
