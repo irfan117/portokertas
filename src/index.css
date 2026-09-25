@@ -12,7 +12,7 @@
   --accent-ink:#12276B;
   --radius:2px;
   --maxw:1280px;
-  --gutter:clamp(20px, 4vw, 52px);
+  --gutter:clamp(16px, 5vw, 48px);
   --social-panel-width:min(420px, calc(100vw - 44px));
   font-size:16px;
 }
@@ -20,19 +20,19 @@
 @media (min-width: 1440px) {
   :root {
     --maxw: 1340px;
-    --gutter: 56px;
+    --gutter: 48px;
   }
 }
 
 @media (max-width: 1024px) {
   :root {
-    --gutter: 32px;
+    --gutter: 24px;
   }
 }
 
 @media (max-width: 640px) {
   :root {
-    --gutter: 20px;
+    --gutter: 16px;
   }
 }
 
